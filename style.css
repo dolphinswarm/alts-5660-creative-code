@@ -1,0 +1,58 @@
+/* ======== FONTS ======== */
+.quantico-regular {
+	font-family: 'Quantico', sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.quantico-bold {
+	font-family: 'Quantico', sans-serif;
+	font-weight: 700;
+	font-style: normal;
+}
+
+.quantico-regular-italic {
+	font-family: 'Quantico', sans-serif;
+	font-weight: 400;
+	font-style: italic;
+}
+
+.quantico-bold-italic {
+	font-family: 'Quantico', sans-serif;
+	font-weight: 700;
+	font-style: italic;
+}
+
+/* ======== TAG STYLES ======== */
+a {
+	color: lightcyan;
+	text-decoration: none;
+}
+
+body {
+	color: white;
+	background-color: black;
+}
+
+/* ======== CLASS STYLES ======== */
+.content {
+	width: 100%;
+	max-width: 50rem;
+	background-color: darkslategrey;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	margin: auto;
+}
+
+.content header {
+	text-align: center;
+}
+
+.content main li {
+	font-size: 16px;
+}
+
+.back-button {
+	display: inline-block;
+	margin-bottom: 1rem;
+}
