@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Week 1 — Atlas A</title>
+		<title>Week 1 - Atlas A</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -11,6 +11,13 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="../style.css" />
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"
+				}
+			}
+		</script>
 		<script src="../shared/back-button.js" defer></script>
 	</head>
 	<body class="quantico-regular">
@@ -18,10 +25,17 @@
 			<back-button href="../index.html"></back-button>
 
 			<header>
-				<h1>Week 1 — Atlas A</h1>
+				<h1>Week 1: ATLAS A</h1>
 			</header>
 
 			<main></main>
+
+			<div>
+				<button id="prev-scene">←</button>
+				<button id="next-scene">→</button>
+			</div>
 		</div>
+
+		<script type="module" src="ATLAS-A.js"></script>
 	</body>
 </html>
