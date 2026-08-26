@@ -3,17 +3,30 @@ import * as THREE from 'three';
 
 //#region Three.js Scaffolding
 const main = document.querySelector('main');
+if (!main) {
+	throw new Error('main element not found');
+}
+
 const camera = new THREE.PerspectiveCamera(
 	75,
-	window.innerWidth / window.innerHeight,
+	main.clientWidth / main.clientHeight,
 	0.1,
 	1000,
 );
 camera.position.z = 5;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-main?.appendChild(renderer.domElement);
+main.appendChild(renderer.domElement);
+
+const resizeRendererToParent = () => {
+	const { clientWidth: width, clientHeight: height } = main;
+	camera.aspect = width / height;
+	camera.updateProjectionMatrix();
+	renderer.setSize(width, height);
+};
+
+resizeRendererToParent();
+new ResizeObserver(resizeRendererToParent).observe(main);
 //#endregion
 
 //#region Scene Variables
@@ -91,12 +104,6 @@ prevButton?.addEventListener('click', () => {
 });
 nextButton?.addEventListener('click', () => {
 	currentSceneIndex = (currentSceneIndex + 1) % scenes.length;
-});
-
-window.addEventListener('resize', () => {
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-	renderer.setSize(window.innerWidth, window.innerHeight);
 });
 //#endregion
 
