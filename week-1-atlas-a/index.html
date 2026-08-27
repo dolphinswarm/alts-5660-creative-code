@@ -14,28 +14,42 @@
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"
+					"three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
 				}
 			}
 		</script>
 		<script src="../shared/back-button.js" defer></script>
 	</head>
 	<body class="quantico-regular">
-		<div class="content">
+		<section class="content">
 			<back-button href="../index.html"></back-button>
 
 			<header>
 				<h1>Week 1: ATLAS A</h1>
+				<p>
+					Made using Three.JS. Contains 4 separate scenes, each with a
+					differently-stylized A, which can be explored in 3D space
+					using mouse controls.
+				</p>
 			</header>
 
-			<main></main>
+			<main>
+				<img
+					id="static"
+					src="assets/static.gif"
+					alt=""
+					aria-hidden="true"
+				/>
+			</main>
 
-			<div>
+			<aside class="controls">
 				<button id="prev-scene">←</button>
 				<button id="next-scene">→</button>
-			</div>
-		</div>
+			</aside>
+		</section>
 
 		<script type="module" src="ATLAS-A.js"></script>
 	</body>
 </html>
+
