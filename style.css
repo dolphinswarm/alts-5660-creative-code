@@ -28,7 +28,7 @@
 /* ================================================ */
 /* #region Tag Styles */
 a {
-	color: lightcyan;
+	color: #09dfdf;
 	text-decoration: none;
 }
 
@@ -42,6 +42,14 @@ canvas {
 	width: 100%;
 	height: 100%;
 	border-radius: 0.5rem;
+}
+
+b {
+	color: #09dfdf;
+}
+
+ul {
+	list-style-type: none;
 }
 
 /* #endregion*/
