@@ -8,12 +8,7 @@ import {
 	type TextStyleOptions,
 } from "pixi.js";
 import pluralize from "pluralize";
-import {
-	adjectives as GENERIC_ADJECTIVES,
-	animals as GENERIC_ANIMALS,
-	colors as GENERIC_COLORS,
-	names as GENERIC_NAMES,
-} from "unique-names-generator";
+import { adjectives, animals, colors, names } from "unique-names-generator";
 import {
 	BAND_PRESET_NAMES,
 	VENUES,
@@ -196,12 +191,12 @@ const withThe = (phrase: string, useThe: boolean) =>
 const colorOrAnimalNoun = () =>
 	capitalize(
 		Math.random() < COLOR_NOUN_CHANCE
-			? randomChoice(GENERIC_COLORS)
-			: randomChoice(GENERIC_ANIMALS),
+			? randomChoice(colors)
+			: randomChoice(animals),
 	);
 
 /** A capitalized proper name from the generic pool */
-const properName = () => capitalize(randomChoice(GENERIC_NAMES));
+const properName = () => capitalize(randomChoice(names));
 
 /** Support-act name from a randomized word pool + connector + optional "The" */
 const generateSupportName = (): string => {
@@ -218,13 +213,13 @@ const generateSupportName = (): string => {
 
 	const modifier = capitalize(
 		Math.random() < COLOR_MODIFIER_CHANCE
-			? randomChoice(GENERIC_COLORS)
-			: randomChoice(GENERIC_ADJECTIVES),
+			? randomChoice(colors)
+			: randomChoice(adjectives),
 	);
 	const noun = capitalize(
 		Math.random() < NAME_AS_NOUN_CHANCE
-			? randomChoice(GENERIC_NAMES)
-			: randomChoice(GENERIC_ANIMALS),
+			? randomChoice(names)
+			: randomChoice(animals),
 	);
 	return withThe(`${modifier} ${noun}`, useThe);
 };
