@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 2 - Poster Generator</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- Poster-only fonts, mixed into the generative type choices in data.ts --
+		     the exact weights/styles requested here must cover every entry in
+		     data.ts's HEADLINER_FONTS/SUPPORT_FONTS/VENUE_FONTS/ACCENT_FONTS pools. -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,600;0,700;1,500;1,700&family=Indie+Flower&family=Space+Grotesk:wght@300;400;500;600;700&family=Allerta+Stencil&family=Anton&family=Archivo:wght@400;600;900&family=Bebas+Neue&family=Danfo&family=Jim+Nightshade&family=Kenia&family=Luckiest+Guy&family=Monoton&family=Nabla&family=Nosifer&family=Special+Elite&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- ../style.css is injected by the keepSharedStylesheet plugin in vite.config.ts --
+		     Vite silently drops <link rel="stylesheet"> tags pointing outside its project root. -->
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			.content main {
+				aspect-ratio: 2 / 3;
+			}
+
+			/* Shared .controls stacks buttons full-width at font-size 32px --
+			   too big to fit three across on this page's own poster width. */
+			.controls {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+			}
+
+			.controls button {
+				font-size: 20px;
+				padding: 0.4rem 0.75rem;
+			}
+		</style>
+	</head>
+	<body class="quantico-regular">
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>Week 2: Poster Generator</h1>
+				<p>
+					A generative DIY show-flyer poster, built with
+					<a href="https://pixijs.com/" target="_blank" rel="noopener">PixiJS</a>. Every band name, venue, date,
+					color, and shape is randomly generated from a fixed set of building blocks.
+				</p>
+				<p>
+					Click 🎲 for a brand new poster. Click 🎵 to keep the poster and just swap the song. Click 🎨 to keep the same layout and just swap the color palette.
+				</p>
+				<p>
+					Click the poster itself to loop its show -- a clip built with
+					<a href="https://tonejs.github.io/" target="_blank" rel="noopener">Tone.js</a>. Every sticker and
+					stamp on the poster is tied to a specific sound (kick, snare, crash, hi-hat, guitar, or bass) and
+					pulses right along with it. Click again to stop it.
+				</p>
+			</header>
+
+			<aside class="controls">
+				<button id="regenerate-btn">🎲 New Poster</button>
+				<button id="regenerate-audio-btn">🎵 New Song</button>
+				<button id="swap-colors-btn">🎨 Swap Colors</button>
+				<button id="export-btn">💾 Save PNG</button>
+			</aside>
+
+			<main></main>
+		</section>
+
+		<script type="module" src="src/main.ts"></script>
+	</body>
+</html>

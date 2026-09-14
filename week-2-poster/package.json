@@ -1,0 +1,21 @@
+{
+	"name": "week-2-poster",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc --noEmit && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"pixi.js": "^8.20.1",
+		"pluralize": "^8.0.0",
+		"tone": "^15.1.22",
+		"unique-names-generator": "^4.7.1"
+	},
+	"devDependencies": {
+		"@types/pluralize": "^0.0.33",
+		"typescript": "^7.0.2",
+		"vite": "^8.3.0"
+	}
+}

@@ -1,0 +1,65 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Assemble site
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          touch _site/.nojekyll
+
+          # Repo-root static files.
+          cp index.html style.css _site/
+          cp -r shared _site/
+
+          # Each week-*/ folder: build it if it has a package.json, else copy as-is.
+          for dir in week-*/; do
+            name="${dir%/}"
+            if [ -f "${dir}package.json" ]; then
+              echo "::group::build ${name}"
+              npm --prefix "${dir}" ci
+              npm --prefix "${dir}" run build
+              mkdir -p "_site/${name}"
+              cp -r "${dir}dist/." "_site/${name}/"
+              echo "::endgroup::"
+            else
+              echo "copy ${name}"
+              cp -r "${dir}" "_site/${name}"
+            fi
+          done
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
