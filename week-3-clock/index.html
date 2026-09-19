@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 3 - Clock</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			rel="stylesheet"
+		/>
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			.content main {
+				aspect-ratio: 6 / 7;
+				max-width: 600px;
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body class="quantico-regular">
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>Week 3: Clock</h1>
+				<p>
+					A "marble clock" built with
+					<a href="https://pixijs.com/" target="_blank" rel="noopener"
+						>Pixi.js</a
+					>,
+					<a
+						href="https://brm.io/matter-js/"
+						target="_blank"
+						rel="noopener"
+						>Matter.js</a
+					>, and
+					<a
+						href="https://tonejs.github.io/"
+						target="_blank"
+						rel="noopener"
+						>Tone.js</a
+					>. Four chutes drop marbles on their own real-seconds
+					interval (1s / 2s / 4s / 8s), with each marble/peg collision
+					playing a random note from a chord. The chord changes every
+					15 seconds, and each peg has a small chance of playing a
+					note outside the current chord.
+				</p>
+				<p>
+					Tap the board to start the sound. Click a peg to
+					"remove"/"re-add" it.
+				</p>
+				<p>
+					<a
+						href="https://github.com/dolphinswarm/alts-5660-creative-code/tree/main/week-3-clock"
+						target="_blank"
+						rel="noopener"
+						>View source on GitHub</a
+					>
+				</p>
+			</header>
+
+			<main></main>
+		</section>
+
+		<script type="module" src="src/main.ts"></script>
+	</body>
+</html>
+
