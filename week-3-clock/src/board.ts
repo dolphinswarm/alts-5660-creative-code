@@ -147,7 +147,7 @@ export const hitPeg = (
 	color: string,
 ): { noteIndex: number; offNote: string | undefined } | undefined => {
 	const peg = pegByBody.get(body);
-	if (!peg) {
+	if (!peg || !peg.isActive) {
 		return undefined;
 	}
 	peg.glow = 1;
