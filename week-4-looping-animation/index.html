@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 4 - Looping Animation</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			.content main img,
+			.walkthrough video {
+				display: block;
+				width: 100%;
+				height: 100%;
+				object-fit: contain;
+				border-radius: 0.5rem;
+			}
+
+			.walkthrough {
+				margin-top: 1rem;
+				text-align: center;
+			}
+
+			.walkthrough video {
+				aspect-ratio: 16 / 9;
+				background-color: black;
+			}
+		</style>
+	</head>
+	<body class="quantico-regular">
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>Week 4: Looping Animation</h1>
+				<p>
+					A looping animation built in
+					<a
+						href="https://derivative.ca/"
+						target="_blank"
+						rel="noopener"
+						>TouchDesigner</a
+					>.
+				</p>
+				<p>
+					<a href="img/looping-animation.mov" download
+						>Download full-quality video (.mov)</a
+					>
+					&middot;
+					<a href="week-4-looping-animation.toe" download
+						>Download TouchDesigner project (.toe)</a
+					>
+					&middot;
+					<a
+						href="https://github.com/dolphinswarm/alts-5660-creative-code/tree/main/week-4-looping-animation"
+						target="_blank"
+						rel="noopener"
+						>View source on GitHub</a
+					>
+				</p>
+			</header>
+
+			<main>
+				<img
+					src="img/looping-animation.gif"
+					alt="Looping TouchDesigner animation"
+				/>
+			</main>
+
+			<section id="walkthrough" class="walkthrough">
+				<h2>Video Walkthrough</h2>
+				<video
+					src="img/video-walkthrough.mp4"
+					controls
+					preload="metadata"
+					playsinline
+				></video>
+			</section>
+		</section>
+	</body>
+</html>
+
