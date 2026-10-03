@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 5 - Generator</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			.content main video,
+			.walkthrough video {
+				display: block;
+				width: 100%;
+				height: 100%;
+				aspect-ratio: 16 / 9;
+				object-fit: contain;
+				background-color: black;
+				border-radius: 0.5rem;
+			}
+
+			.walkthrough {
+				margin-top: 1rem;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body class="quantico-regular">
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>Week 5: Generator</h1>
+				<p>
+					A generative creepy forest built in
+					<a
+						href="https://derivative.ca/"
+						target="_blank"
+						rel="noopener"
+						>TouchDesigner</a
+					>.
+				</p>
+				<p>
+					<a href="img/week-5-generator.mov" download
+						>Download full-quality video (.mov)</a
+					>
+					&middot;
+					<a href="week-5-generator.toe" download
+						>Download TouchDesigner project (.toe)</a
+					>
+					&middot;
+					<a
+						href="https://github.com/dolphinswarm/alts-5660-creative-code/tree/main/week-5-generator"
+						target="_blank"
+						rel="noopener"
+						>View source on GitHub</a
+					>
+				</p>
+			</header>
+
+			<main>
+				<video
+					src="img/week-5-generator.mp4"
+					controls
+					preload="metadata"
+					playsinline
+				></video>
+			</main>
+
+			<section id="walkthrough" class="walkthrough">
+				<h2>Video Walkthrough</h2>
+				<video
+					src="img/video-walkthrough-week-5.mp4"
+					controls
+					preload="metadata"
+					playsinline
+				></video>
+			</section>
+		</section>
+	</body>
+</html>
