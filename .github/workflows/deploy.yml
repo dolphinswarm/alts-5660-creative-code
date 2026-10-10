@@ -25,6 +25,9 @@ jobs:
           node-version: 22
 
       - name: Assemble site
+        env:
+          # Week 6's Vite build inlines its Google Maps key from here.
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
           set -euo pipefail
           mkdir -p _site

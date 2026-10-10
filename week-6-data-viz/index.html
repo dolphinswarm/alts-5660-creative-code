@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 6 - Data Visualization</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐿️</text></svg>"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- ../style.css is injected by the keepSharedStylesheet plugin in vite.config.ts -
+		     Vite silently drops <link rel="stylesheet"> tags pointing outside its project root. -->
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			:root {
+				--bg: linear-gradient(160deg, #2f4a2c, #1d2e1b);
+				--surface: #f5eedc;
+				--text: #3a2e1f;
+				--accent: #3f7d3a;
+				--accent-text: white;
+				/* Also the selected-squirrel pin color in squirrel-herd.tsx */
+				--highlight: #e07b39;
+				--panel: rgba(245, 238, 220, 0.94);
+				--font-body: "Lora", serif;
+				--font-display: "Caveat", cursive;
+			}
+
+			#root {
+				display: contents;
+			}
+
+			h1 {
+				font-size: 2.5rem;
+			}
+
+			/* Matches the scene background in squirrel-map.tsx, so the map area is dark while loading */
+			.content main {
+				background: #151c1f;
+				border-radius: var(--radius);
+			}
+
+			#status,
+			#attribution {
+				color: white;
+				text-shadow: 0 1px 3px black;
+			}
+
+			#status {
+				position: absolute;
+				inset: 0;
+				display: grid;
+				place-items: center;
+				pointer-events: none;
+			}
+
+			#attribution {
+				position: absolute;
+				right: 0.5rem;
+				bottom: 0.5rem;
+				font-size: 11px;
+				opacity: 0.8;
+				pointer-events: none;
+			}
+
+			#controls-help {
+				position: absolute;
+				left: 0.5rem;
+				bottom: 0.5rem;
+				margin: 0;
+				padding: 0.25rem 0.5rem;
+				font-size: 12px;
+				background: var(--panel);
+				border-radius: 0.25rem;
+				pointer-events: none;
+			}
+
+			main canvas {
+				cursor: grab;
+				outline: none;
+			}
+
+			#filters {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				margin-top: 0.75rem;
+				font-size: 13px;
+			}
+
+			#filter-groups {
+				display: contents;
+			}
+
+			#filters fieldset {
+				margin: 0;
+				padding: 0.25rem 0.5rem 0.5rem;
+				border: 1px solid rgba(58, 46, 31, 0.25);
+				border-radius: 0.5rem;
+			}
+
+			#filters legend {
+				padding: 0 0.25rem;
+				color: var(--accent);
+				font-weight: 700;
+			}
+
+			#filters label {
+				display: inline-block;
+				margin-right: 0.5rem;
+				white-space: nowrap;
+				cursor: pointer;
+			}
+
+			#filters .count {
+				opacity: 0.6;
+			}
+
+			#filter-summary {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				flex-basis: 100%;
+			}
+
+			#filter-summary button {
+				font: inherit;
+				padding: 0.25rem 0.75rem;
+				color: var(--accent-text);
+				background: var(--accent);
+				border: none;
+				border-radius: 0.25rem;
+				cursor: pointer;
+			}
+
+			.info-tip {
+				display: inline-grid;
+				place-items: center;
+				width: 1.15em;
+				height: 1.15em;
+				margin-left: 0.25em;
+				font-size: 0.8em;
+				font-weight: 700;
+				font-style: italic;
+				line-height: 1;
+				color: var(--accent-text);
+				background: var(--accent);
+				border-radius: 50%;
+				vertical-align: 0.1em;
+				cursor: help;
+			}
+
+			.tooltip {
+				position: fixed;
+				z-index: 10;
+				max-width: 16rem;
+				padding: 0.4rem 0.6rem;
+				font-size: 12px;
+				line-height: 1.4;
+				color: var(--text);
+				background: var(--panel);
+				border: 1px solid var(--accent);
+				border-radius: 0.25rem;
+				pointer-events: none;
+			}
+
+			.tooltip[hidden] {
+				display: none;
+			}
+
+			.sounds-link {
+				margin-left: 0.25rem;
+				padding: 0 0.4rem;
+				font-size: 0.85em;
+				color: var(--accent);
+				text-decoration: none;
+				border: 1px solid var(--accent);
+				border-radius: 0.25rem;
+			}
+
+			#squirrel-info {
+				position: absolute;
+				top: 0.5rem;
+				right: 0.5rem;
+				width: min(20rem, 50%);
+				max-height: calc(100% - 3rem);
+				display: flex;
+				flex-direction: column;
+				background: var(--panel);
+				border-radius: var(--radius);
+				font-size: 13px;
+			}
+
+			#squirrel-info[hidden] {
+				display: none;
+			}
+
+			#squirrel-info-close {
+				align-self: flex-end;
+				margin: 0.25rem 0.25rem 0;
+				background: none;
+				border: none;
+				color: var(--text);
+				font-size: 18px;
+				cursor: pointer;
+			}
+
+			#squirrel-info-content {
+				overflow-y: auto;
+				padding: 0 0.75rem 0.75rem;
+			}
+
+			#squirrel-info h2 {
+				margin: 0;
+				font-size: 22px;
+				color: var(--accent);
+			}
+
+			#squirrel-info h3 {
+				margin: 0.75rem 0 0.25rem;
+				font-size: 14px;
+			}
+
+			#squirrel-info .subtitle {
+				margin: 0.25rem 0 0.5rem;
+				opacity: 0.8;
+			}
+
+			#squirrel-info dl {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				gap: 0.15rem 0.75rem;
+				margin: 0;
+			}
+
+			#squirrel-info dt {
+				opacity: 0.7;
+			}
+
+			#squirrel-info dd {
+				margin: 0;
+			}
+
+			#squirrel-info .note {
+				display: block;
+				font-style: italic;
+			}
+
+			#squirrel-info blockquote {
+				margin: 0.75rem 0 0;
+				padding-left: 0.5rem;
+				border-left: 2px solid var(--highlight);
+				font-style: italic;
+			}
+
+			#squirrel-info blockquote footer {
+				margin-top: 0.25rem;
+				font-size: 11px;
+				font-style: normal;
+				opacity: 0.7;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>🐿️ Week 6: Data Visualization 🌰</h1>
+				<p>
+					A Three.JS visualization of the
+					<a
+						href="https://data.cityofnewyork.us/Environment/2018-Central-Park-Squirrel-Census-Squirrel-Data/vfnx-vebw"
+						target="_blank"
+						rel="noopener"
+						>2018 Central Park Squirrel Census</a
+					>: 3,023 squirrel sightings across 350 hectares of Central
+					Park over 11 days in October 2018. The 2,919 shown here are
+					the ones with a recorded fur color and location.
+				</p>
+				<p>
+					<b>Drag</b> to move around the park, <b>scroll</b> to zoom,
+					and <b>right-drag</b> (or <b>Shift</b>-drag) to rotate.
+					Click a squirrel to fly down to it and see what the census
+					recorded about it. Every squirrel is circled in its fur
+					color, and squirrels hidden under the trees show through as
+					faint silhouettes. The filters below narrow down which ones
+					are shown.
+				</p>
+				<p>
+					Squirrel model:
+					<a
+						href="https://sketchfab.com/3d-models/low-poly-squirrel-84612b29ae864768ae94384a103e3d73"
+						target="_blank"
+						rel="noopener"
+						>"Low poly squirrel"</a
+					>
+					by
+					<a href="https://sketchfab.com/ClydeXYZ" target="_blank" rel="noopener">ClydeXYZ</a>,
+					licensed under
+					<a
+						href="http://creativecommons.org/licenses/by/4.0/"
+						target="_blank"
+						rel="noopener"
+						>CC BY 4.0</a
+					>.
+				</p>
+				<p>
+					<a
+						href="https://github.com/dolphinswarm/alts-5660-creative-code/tree/main/week-6-data-viz"
+						target="_blank"
+						rel="noopener"
+						>View source on GitHub</a
+					>
+				</p>
+			</header>
+
+			<!-- main and #filters, rendered by src/app.tsx -->
+			<div id="root"></div>
+		</section>
+
+		<script type="module" src="./src/main.tsx"></script>
+	</body>
+</html>
