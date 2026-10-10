@@ -12,7 +12,7 @@ export type Squirrel = {
 	hectare: string;
 	shift: Shift;
 	date: Date;
-	/** `${hectare}|${shift}|${date}` - see sessionKey() */
+	/** See sessionKey() */
 	sessionKey: string;
 	/** "X" */
 	lon: number;
@@ -56,10 +56,7 @@ type Story = {
 	topics: string[];
 };
 
-/**
- * Everything that happened in one hectare during one shift on one day.
- * This is the "join" of all three CSVs.
- */
+/** Everything from one hectare, shift and day - the join of all three CSVs. */
 export type Session = {
 	/** null for the few sessions with no hectare.csv row */
 	survey: Survey | null;
@@ -78,9 +75,7 @@ type Row = Record<string, string>;
 
 //#region Parsing helpers
 
-/**
- * The census writes dates as MMDDYYYY, e.g. "10142018".
- */
+/** Census dates are MMDDYYYY, e.g. "10142018". */
 const parseDate = (raw: string) =>
 	new Date(+raw.slice(4, 8), +raw.slice(0, 2) - 1, +raw.slice(2, 4));
 
@@ -91,10 +86,7 @@ const parseNumber = (raw: string | undefined) => {
 	return Number.isFinite(value) ? value : null;
 };
 
-/**
- * The column that ties all three files together. A "session" is one hectare,
- * surveyed during one shift (AM/PM), on one day.
- */
+/** One hectare, shift and day - what ties all three CSVs together. */
 const sessionKey =(row: Row) => `${row.Hectare}|${row.Shift}|${row.Date}`;
 
 const loadCsv = async (url: string) => {
@@ -164,13 +156,8 @@ const toStory = (row: Row): Story => ({
 //#endregion
 
 /**
- * Loads all three CSVs and joins them by session (hectare + shift + date).
- *
- * Note: stories.csv covers ~190 sessions that have no hectare.csv row (often
- * "no squirrels seen" visits), and 9 squirrels in 09I have no hectare.csv row
- * either - those sessions are still created, just with `survey: null`.
- *
- * Squirrels with no recorded fur color or location are left out entirely.
+ * Loads all three CSVs and joins them by session. ~200 sessions have no
+ * hectare.csv row, so "survey" is null. Squirrels with no fur color or location are dropped.
  */
 export const loadSquirrelCensus = async (): Promise<SquirrelCensus> => {
 	const [hectareRows, squirrelRows, storyRows] = await Promise.all([

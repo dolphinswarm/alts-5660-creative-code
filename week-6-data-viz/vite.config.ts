@@ -7,14 +7,8 @@ import { defineConfig, type Plugin } from "vite";
 const REPO_ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 const MIME_TYPES: Record<string, string> = { ".css": "text/css", ".js": "text/javascript" };
 
-// Once deployed, this page really does sit one level under style.css and
-// shared/back-button.js, so the ../ references in index.html are correct -
-// but "vite dev" serves this project's own folder AS the site root, and a
-// browser can't request above an origin's root (../style.css from "/"
-// normalizes to just "/style.css"), so those two files 404 in dev even
-// though the exact same relative paths work fine once actually deployed.
-// This middleware serves just those two paths from their real repo-root
-// locations so "npm run dev" matches production instead of looking broken.
+// "vite dev" serves this folder as the site root, so ../style.css and
+// ../shared/back-button.js would 404 - serve them from the repo root instead.
 const serveSharedAssets: Plugin = {
 	name: "serve-shared-assets",
 	configureServer(server) {
@@ -35,15 +29,8 @@ const serveSharedAssets: Plugin = {
 	},
 };
 
-// Vite's HTML pipeline tries to resolve every <link rel="stylesheet"> as a
-// CSS module within its project root, and silently drops the tag when that
-// fails - which it always will here, since style.css is a click up at the
-// repo root, shared with every other week. Re-adding the tag after Vite's
-// own pass (order: "post") is the standard escape hatch for "just leave this
-// URL alone." Runs in both dev and build since transformIndexHtml covers both.
-//
-// Inserted right after <head> opens (not before </head>) so it stays FIRST
-// in the cascade, and this page's own inline <style> wins same-specificity ties.
+// Vite drops <link rel="stylesheet"> tags outside its root, so re-add it after
+// Vite's pass - first in <head>, so this page's own <style> wins ties.
 const keepSharedStylesheet: Plugin = {
 	name: "keep-shared-stylesheet",
 	transformIndexHtml: {
@@ -53,15 +40,13 @@ const keepSharedStylesheet: Plugin = {
 };
 
 export default defineConfig({
-	// Lets the existing GOOGLE_API_KEY line in .env through as import.meta.env.GOOGLE_API_KEY.
+	// Exposes GOOGLE_API_KEY from .env.
 	envPrefix: ["VITE_", "GOOGLE_"],
-	// Relative asset URLs - this page can be deployed under any subpath
-	// (e.g. GitHub Pages' /<repo>/week-6-data-viz/) without knowing it in advance.
+	// Relative asset URLs, so it works under any Pages subpath.
 	base: "./",
 	server: {
 		fs: {
-			// This page pulls in the repo-root style.css and shared/back-button.js,
-			// both outside this project's own folder.
+			// For the repo-root style.css and shared/back-button.js.
 			allow: [".."],
 		},
 	},

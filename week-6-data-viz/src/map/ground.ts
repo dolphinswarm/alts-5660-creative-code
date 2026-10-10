@@ -1,16 +1,12 @@
 import * as THREE from "three";
 import type { Herd } from "./herd.js";
 
-// The scene's origin is on the WGS84 ellipsoid, and the park's ground is within
-// a few tens of meters of it. Rays start well above the tallest buildings,
-// and hits far below are Google's coarse globe-scale tiles (whose flat faces
-// cut kilometers under the surface) rather than real ground.
+// Rays start above the tallest buildings. Hits far below the ellipsoid are
+// coarse globe-scale tiles, not real ground.
 const GROUND_PROBE_Y = 2000;
 const MIN_GROUND_Y = -100;
 
-// The camera stays at least this far (meters) above the ground - but can pass
-// through treetops and roofs. Above CAMERA_GROUND_CHECK_HEIGHT it can't be near
-// the ground, so the (raycast) check is skipped.
+// Meters the camera stays above the ground (not treetops), checked only below CAMERA_GROUND_CHECK_HEIGHT.
 const CAMERA_GROUND_CLEARANCE = 1;
 const CAMERA_GROUND_CHECK_HEIGHT = 300;
 
@@ -23,11 +19,7 @@ const squirrelPosition = new THREE.Vector3();
 
 type Surface = { top: number; bottom: number; bottomError: number };
 
-/**
- * The loaded tile surfaces at (sceneX, sceneZ): the highest (treetops, roofs) and the
- * lowest (usually the ground under them), plus the geometric error of the
- * tile the lowest came from. Null if nothing believable has loaded there yet.
- */
+/** Highest and lowest loaded tile surfaces at (sceneX, sceneZ), or null if none yet. */
 export const probeSurfaceAt = (tiles: THREE.Object3D, sceneX: number, sceneZ: number): Surface | null => {
 	raycaster.set(rayOrigin.set(sceneX, GROUND_PROBE_Y, sceneZ), down);
 	const hits = raycaster.intersectObject(tiles, true).filter((hit) => hit.point.y > MIN_GROUND_Y);
@@ -51,15 +43,8 @@ export const queueSquirrelSnaps = (herd: Herd, camera: THREE.Camera) => {
 };
 
 /**
- * Drops squirrels onto the ground under them in Google's tiles. Raycasting
- * against the tile meshes is expensive, so this works through the snap queue
- * a few at a time, spending at most SNAP_BUDGET_MS per frame.
- *
- * A squirrel's first snap is to whatever tiles are loaded under it, even the
- * coarse blobs far from the camera that sit above the real ground - better
- * than buried under them. After that it only moves for equally or more
- * detailed tiles, so swapping back to coarse tiles as you move away doesn't
- * lift it off the ground it already found.
+ * Snaps queued squirrels to the ground, up to SNAP_BUDGET_MS per frame. After the first
+ * snap they only move for tiles at least as detailed, so coarse tiles can't lift them.
  */
 export const snapSomeSquirrelsToGround = (herd: Herd, tiles: THREE.Object3D) => {
 	const start = performance.now();

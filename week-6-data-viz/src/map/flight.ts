@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { probeSurfaceAt } from "./ground.js";
 import { type Herd, SQUIRREL_LENGTH_METERS } from "./herd.js";
 
-// Clicking a squirrel flies the camera to this far from it, tilted this far from straight down.
+// Where flying to a squirrel ends up: this far away, tilted this far from straight down.
 const FLY_TO_DISTANCE = 12;
 const FLY_TO_TILT = THREE.MathUtils.degToRad(30);
 
@@ -35,12 +35,7 @@ export const createFlight = (camera: THREE.Camera, destination: Pose): Flight =>
 	};
 };
 
-/**
- * Moves the camera along "flight".
- *
- * @param delta Seconds since the last frame.
- * @returns Whether the flight has landed.
- */
+/** Moves the camera "delta" seconds along "flight", returning true once it's landed. */
 export const stepFlight = (flight: Flight, camera: THREE.Camera, delta: number) => {
 	flight.elapsed += delta;
 	const progress = Math.min(flight.elapsed / flight.duration, 1);
@@ -51,10 +46,7 @@ export const stepFlight = (flight: Flight, camera: THREE.Camera, delta: number) 
 	return progress === 1;
 };
 
-/**
- * Where to look down at squirrel "index" from, keeping the camera's current heading
- * so the view doesn't spin on the way.
- */
+/** A view down at squirrel "index" that keeps the camera's heading, so it doesn't spin. */
 export const getSquirrelViewPose = (
 	herd: Herd,
 	index: number,

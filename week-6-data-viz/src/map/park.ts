@@ -2,8 +2,7 @@ import * as THREE from "three";
 import { WGS84_ELLIPSOID } from "3d-tiles-renderer";
 import type { Herd } from "./herd.js";
 
-// Roughly the middle of Central Park - becomes the scene's origin, with +Y up
-// and units in meters.
+// Roughly the middle of Central Park - the scene's origin (+Y up, meters).
 export const PARK_CENTER = { lat: 40.7824, lon: -73.9654 };
 
 // How far past the park's edges (meters) the camera may go, and how high,
@@ -13,11 +12,7 @@ const CAMERA_MAX_HEIGHT_SCALE = 1.25;
 // Roughly the height getOverviewPose() picks for the whole park.
 const PLACEHOLDER_HEIGHT = 4500;
 
-/**
- * The park as a rectangle fitted to the squirrels: its long axis (pointing
- * north), the direction across it, and its half length and width in meters.
- * Plus which way is true north and east in the scene.
- */
+/** A rectangle fitted to the squirrels, plus true north and east in the scene. */
 export type ParkFrame = {
 	center: THREE.Vector3;
 	axis: THREE.Vector3;
@@ -30,11 +25,7 @@ export type ParkFrame = {
 
 const ecef = new THREE.Vector3();
 
-/**
- * Lat/long -> this scene's coordinates. Done in float64 on the CPU (Earth-
- * centered coordinates are millions of meters, too big for GPU float32) and
- * only the small, park-relative result is stored for rendering.
- */
+/** Lat/long -> scene coordinates, on the CPU since Earth-centered ones are too big for float32. */
 export const latLonToScene = (tiles: THREE.Object3D, lat: number, lon: number) => {
 	WGS84_ELLIPSOID.getCartographicToPosition(lat * THREE.MathUtils.DEG2RAD, lon * THREE.MathUtils.DEG2RAD, 0, ecef);
 	return ecef.applyMatrix4(tiles.matrixWorld);
@@ -80,10 +71,7 @@ export const computeParkFrame = (herd: Herd, tiles: THREE.Object3D): ParkFrame =
 	};
 };
 
-/**
- * How high a straight-down, north-up camera has to be to fit the whole park
- * on screen.
- */
+/** How high a straight-down, north-up camera has to be to fit the park. */
 const getOverviewHeight = (park: ParkFrame, camera: THREE.PerspectiveCamera) => {
 	const { axis, across, halfLength, halfWidth, north, east } = park;
 	// Half the park's extent east-west and north-south (it runs ~29° east of north).
@@ -103,11 +91,7 @@ export const getOverviewPose = (park: ParkFrame, camera: THREE.PerspectiveCamera
 	return { position, rotation };
 };
 
-/**
- * Close to the overview, for before the squirrels (which it's fitted to) have
- * loaded - so the tiles that stream in meanwhile are mostly ones it'll use.
- * ReorientationPlugin puts north at +Z.
- */
+/** Roughly the overview, until the squirrels it's fitted to have loaded. North is +Z. */
 export const getPlaceholderPose = () => {
 	const position = new THREE.Vector3(0, PLACEHOLDER_HEIGHT, 0);
 	const rotation = new THREE.Quaternion().setFromRotationMatrix(
@@ -118,14 +102,9 @@ export const getPlaceholderPose = () => {
 
 const cameraMove = new THREE.Vector3();
 
-/**
- * Keeps the camera over the park (plus CAMERA_BOUNDS_MARGIN) and below CAMERA_MAX_HEIGHT_SCALE.
- *
- * @param previous Where the camera was before the controls moved it this frame.
- */
+/** Keeps the camera over the park. "previous" is where it was before the controls moved it. */
 export const clampCameraToPark = (park: ParkFrame, camera: THREE.PerspectiveCamera, previous: THREE.Vector3) => {
-	// Past the ceiling, back up along this frame's move rather than just
-	// dropping y - otherwise zooming out (along a slanted ray) slides sideways.
+	// Back up along this frame's move, not just y, or zooming out slides sideways.
 	const ceiling = getOverviewHeight(park, camera) * CAMERA_MAX_HEIGHT_SCALE;
 	const rise = camera.position.y - previous.y;
 	if (camera.position.y > ceiling && rise > 0) {

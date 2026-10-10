@@ -5,8 +5,7 @@ import type { SquirrelModel } from "../squirrel-model.js";
 const FEET_TO_METERS = 0.3048;
 // An eastern gray squirrel is ~45cm nose to tail.
 export const SQUIRREL_LENGTH_METERS = 0.45;
-// Farther away, squirrels grow so they're always at least this long relative
-// to their distance from the camera (~0.015 is about 10px on a typical canvas).
+// Far-off squirrels grow to at least this length per distance (~10px on screen).
 const SQUIRREL_MIN_ANGULAR_SIZE = 0.015;
 // How close (in screen pixels) a click/hover has to be to a squirrel to pick it.
 const PICK_RADIUS_PX = 12;
@@ -17,40 +16,34 @@ const FUR_COLORS: Record<string, number> = {
 	Black: 0x2b2b2b,
 };
 
-/**
- * Every squirrel's place on the map, as flat arrays that the instanced meshes
- * and the ring markers read straight from.
- */
+/** Every squirrel, as flat arrays the instanced meshes and ring markers read directly. */
 export type Herd = {
 	count: number;
 	model: SquirrelModel;
-	/** Where each squirrel's feet are, in scene coordinates. */
+	/** Feet, in scene coordinates */
 	positions: Float32Array;
-	/** Each squirrel's spot on the WGS84 ellipsoid (height 0) - see placeHerd(). */
+	/** On the ellipsoid, before snapping */
 	basePositions: Float32Array;
-	/** How far up a tree each squirrel was seen, in meters. */
+	/** Meters up a tree */
 	climbHeights: Float32Array;
-	/** Each squirrel's current scale - its length in meters (see updateHerdInstances). */
+	/** Current length in meters */
 	scales: Float32Array;
-	/** A fixed, random-looking facing direction per squirrel, the same every visit. */
+	/** Fixed pseudo-random facing */
 	yaws: Float32Array;
-	/** 1 if a squirrel passes the current filters, else 0 (hidden and unpickable). */
+	/** 1 if it passes the filters, else 0 */
 	shown: Uint8Array;
-	/**
-	 * The geometric error of the tile each squirrel's height came from - lower is
-	 * more detailed. Infinity until it's first snapped.
-	 */
+	/** Geometric error of the tile its height came from (lower is more detailed) */
 	groundError: Float64Array;
-	/** Squirrels still to snap to the ground, farthest first (so pop() takes the nearest). */
+	/** Farthest first, so pop() takes the nearest */
 	snapQueue: number[];
 	placed: boolean;
 	dirty: boolean;
 	lastCameraPosition: THREE.Vector3;
-	/** One shared set of instance matrices for every model part. */
+	/** Shared by every model part */
 	matrices: THREE.InstancedBufferAttribute;
-	/** Per-instance fur tints, by SquirrelModelPart tint. */
+	/** Per-instance fur tints */
 	tints: Record<"fur" | "furDark", THREE.InstancedBufferAttribute>;
-	/** The ring markers' attributes, over the same arrays. */
+	/** Over the same arrays */
 	markerAttributes: Record<"position" | "squirrelScale" | "furColor", THREE.BufferAttribute>;
 };
 
@@ -92,7 +85,7 @@ export const createHerd = (census: SquirrelCensus, model: SquirrelModel): Herd =
 	};
 };
 
-/** Indices of the squirrels flagged 1 in "shown" (see Herd.shown). */
+/** Indices of the shown squirrels. */
 export const getShownSquirrels = (shown: Uint8Array) =>
 	Array.from(shown).flatMap((isShown, index) => (isShown ? [index] : []));
 
@@ -113,13 +106,7 @@ const instanceRotation = new THREE.Quaternion();
 const instanceScale = new THREE.Vector3();
 const upAxis = new THREE.Vector3(0, 1, 0);
 
-/**
- * Rebuilds every squirrel's instance matrix. Up close they're real-sized, but
- * farther away they scale up so they never shrink below a few pixels on
- * screen - otherwise they'd be invisible from the air. Filtered-out squirrels
- * get a scale of 0. Only runs when the camera has moved, squirrels have been
- * re-snapped, or the filters changed.
- */
+/** Rebuilds the instance matrices - real-sized up close, scaled up from afar, 0 if filtered out. */
 export const updateHerdInstances = (herd: Herd, camera: THREE.Camera) => {
 	if (!herd.placed) {
 		return;
@@ -155,12 +142,7 @@ export const getSquirrelCenter = (herd: Herd, index: number, target: THREE.Vecto
 const projected = new THREE.Vector3();
 const squirrelCenter = new THREE.Vector3();
 
-/**
- * Index of the squirrel under the cursor, or -1. Picks in screen space (nearest
- * squirrel to the cursor) rather than by raycasting the instanced meshes -
- * far-off squirrels are only a few pixels big, and this gives them a forgiving
- * click target.
- */
+/** Index of the squirrel nearest the cursor on screen, or -1 - more forgiving than raycasting. */
 export const pickSquirrel = (
 	herd: Herd,
 	camera: THREE.PerspectiveCamera,

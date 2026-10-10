@@ -1,6 +1,5 @@
 /**
- * What the census's squirrel jargon means. Definitions are from the dataset's
- * column descriptions on NYC Open Data; "sounds like" descriptions are from
+ * From NYC Open Data's column descriptions, "sounds like" bits from
  * https://northernwoodlands.org/outside_story/article/squirrel-talk
  */
 const GLOSSARY = {
@@ -39,7 +38,7 @@ type GlossaryTermProps = {
 	term: GlossaryKey;
 };
 
-/** A term followed by an info icon that shows its definition (see tooltip.tsx). */
+/** A term with an info icon showing its definition. */
 export const GlossaryTerm = ({ term }: GlossaryTermProps) => {
 	const { label, definition } = GLOSSARY[term];
 	return (
@@ -55,7 +54,7 @@ export const GlossaryTerm = ({ term }: GlossaryTermProps) => {
 // "Squirrel Animal Sounds | Squirrel Sounds Meanings" by Cool Nature Sounds.
 const SOUNDS_VIDEO_URL = "https://www.youtube.com/watch?v=-aRGf37iihI";
 
-/** A link to a video of squirrels making the census's calls, which opens in a new tab. */
+/** Link to a video of the census's squirrel calls. */
 export const SoundsLink = () => (
 	<a
 		className="sounds-link"

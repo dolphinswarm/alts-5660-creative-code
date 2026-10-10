@@ -23,7 +23,7 @@ const App = () => {
 	const [tilesFailed, setTilesFailed] = React.useState(false);
 	const [attribution, setAttribution] = React.useState("");
 	const [checks, setChecks] = React.useState(DEFAULT_FILTER_CHECKS);
-	// An object, so picking the squirrel that's already selected still counts as a change.
+	// An object, so re-picking the same squirrel still counts as a change.
 	const [selection, setSelection] = React.useState({ index: -1 });
 	const map = React.useRef<SquirrelMapHandle>(null);
 	const infoContent = React.useRef<HTMLDivElement>(null);
@@ -54,7 +54,6 @@ const App = () => {
 	const handleSelect = React.useCallback((index: number) => setSelection({ index }), []);
 	const handleTilesError = React.useCallback(() => setTilesFailed(true), []);
 
-	// Every selection opens the panel scrolled to the top.
 	React.useLayoutEffect(() => {
 		if (infoContent.current) infoContent.current.scrollTop = 0;
 	}, [selection]);
@@ -74,7 +73,6 @@ const App = () => {
 		status = "Loading squirrels...";
 	}
 
-	// The canvas comes first so the overlays, all positioned, stack above it.
 	return (
 		<>
 			<main>

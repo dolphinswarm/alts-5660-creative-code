@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 export type SquirrelModelPart = {
-	/** Baked into model space (see loadSquirrelModel) */
+	/** Baked into model space */
 	geometry: THREE.BufferGeometry;
 	material: THREE.Material;
 	/** Which per-instance fur tint this part takes, if any */
@@ -16,15 +16,8 @@ export type SquirrelModel = {
 };
 
 /**
- * Loads the squirrel .glb and flattens it into plain geometry + material pairs
- * ready for InstancedMesh: every node transform is baked in, and the whole
- * model is normalized so it's 1 unit long, centered over the origin, with its
- * feet at y = 0.
- *
- * Parts are tinted by fur color based on their original material: the
- * largest part (the body) takes the fur color directly, and any part that was
- * darker than the body takes a darker shade of it. Everything else (eyes,
- * etc.) keeps its own color.
+ * Loads the squirrel .glb as flat geometry/material pairs for InstancedMesh, 1 unit
+ * long with its feet at y = 0. The body and anything darker than it take fur tints.
  */
 export const loadSquirrelModel = async (url: string): Promise<SquirrelModel> => {
 	const gltf = await new GLTFLoader().loadAsync(url);
@@ -69,7 +62,7 @@ export const loadSquirrelModel = async (url: string): Promise<SquirrelModel> => 
 				tint = "furDark";
 			}
 			if (tint) {
-				// Instance colors multiply with the material color, so start from white.
+				// Instance colors multiply the material color.
 				material.color.set(0xffffff);
 			}
 			return { geometry: geometries[index], material, tint };

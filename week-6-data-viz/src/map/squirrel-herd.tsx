@@ -35,8 +35,7 @@ const MARKER_VERTEX_SHADER = /* glsl */ `
 		vSize = squirrelScale > 0.0 ? max(minSize * pixelRatio, squirrelPx * 1.6) : 0.0;
 		gl_PointSize = vSize;
 		vColor = furColor;
-		// Fainter from high up, where there are thousands of them, and gone
-		// once the squirrel itself fills the screen.
+		// Fainter from high up, gone once the squirrel fills the screen.
 		vAlpha = mix(1.0, 0.4, smoothstep(300.0, 2000.0, distance))
 			* (1.0 - smoothstep(150.0, 300.0, squirrelPx / pixelRatio));
 	}
@@ -61,10 +60,7 @@ const MARKER_FRAGMENT_SHADER = /* glsl */ `
 	}
 `;
 
-/**
- * Points an InstancedMesh at the herd's shared matrices and a fur tint. Done in
- * a ref, not as props, since R3F would copy them into the mesh's own buffers.
- */
+/** Points an InstancedMesh at the herd's shared buffers - a ref, since R3F props would copy them. */
 const shareInstances = (herd: Herd, tint: SquirrelModelPart["tint"]) => (mesh: THREE.InstancedMesh | null) => {
 	if (mesh) {
 		mesh.instanceMatrix = herd.matrices;
@@ -77,19 +73,12 @@ type SquirrelHerdProps = {
 	tiles: React.RefObject<TilesRenderer | null>;
 };
 
-/**
- * Every squirrel: one InstancedMesh per model part (a few draw calls for the
- * whole herd), x-ray silhouettes for the ones under trees, and a ring around
- * each.
- */
+/** Every squirrel: an InstancedMesh per model part, x-ray silhouettes, and rings. */
 export const SquirrelHerd = ({ herd, tiles }: SquirrelHerdProps) => {
 	const group = React.useRef<THREE.Group>(null);
 
-	// A second pass over the fur parts that only draws where a squirrel is hidden
-	// (depth test inverted), so squirrels under trees show through as silhouettes.
-	// It's drawn after the tiles but before the squirrels themselves, so a
-	// squirrel's own body doesn't count as hiding it. That means staying in the
-	// opaque list (sorted by renderOrder) and blending by hand.
+	// Only draws where a squirrel is hidden, so ones under trees show through. Drawn
+	// before the squirrels so their own bodies don't count, which means blending by hand.
 	const xrayMaterial = React.useMemo(
 		() =>
 			new THREE.MeshBasicMaterial({
@@ -128,7 +117,7 @@ export const SquirrelHerd = ({ herd, tiles }: SquirrelHerdProps) => {
 		}
 	});
 
-	// dispose={null} since the model's geometry and materials outlive this component.
+	// dispose={null} - the model outlives this component.
 	return (
 		<group ref={group}>
 			{herd.model.parts.map((part, partIndex) => (
@@ -153,7 +142,7 @@ export const SquirrelHerd = ({ herd, tiles }: SquirrelHerdProps) => {
 					) : null}
 				</React.Fragment>
 			))}
-			{/* Drawn over everything at a constant thickness, so they stand out against trees and paths at any zoom. */}
+			{/* Always on top, at a constant thickness */}
 			<points frustumCulled={false} raycast={noRaycast} renderOrder={1}>
 				<bufferGeometry>
 					{Object.entries(herd.markerAttributes).map(([name, attribute]) => (
@@ -180,7 +169,7 @@ type SelectedPinProps = {
 	selected: number;
 };
 
-/** A pin floating above the selected squirrel's head, in the page's --highlight color. */
+/** A pin above the selected squirrel, in the page's "--highlight" color. */
 export const SelectedPin = ({ herd, selected }: SelectedPinProps) => {
 	const position = React.useMemo(() => new THREE.BufferAttribute(new Float32Array(3), 3), []);
 	const color = React.useMemo(

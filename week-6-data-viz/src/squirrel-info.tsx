@@ -5,15 +5,12 @@ import { GlossaryTerm, isGlossaryKey, SoundsLink } from "./glossary.js";
 const formatDate = (date: Date) =>
 	date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
 
-// The same wording as the filters.
 const ACTION_LABELS = { running: "Running", chasing: "Chasing", climbing: "Climbing", eating: "Eating", foraging: "Foraging" };
 const HUMAN_LABELS = { approaches: "Approached", indifferent: "Indifferent", runsFrom: "Ran away" };
 
 const listFormat = new Intl.ListFormat("en", { type: "conjunction" });
 
-/**
- * Labels of the flags that are true, e.g. { running: true, eating: false } -> ["Running"].
- */
+/** Labels of the true flags, e.g. { running: true, eating: false } -> ["Running"]. */
 const trueFlags = (flags: Record<string, boolean>, labels: Record<string, string>) =>
 	Object.entries(flags)
 		.filter(([, value]) => value)
@@ -22,11 +19,11 @@ const trueFlags = (flags: Record<string, boolean>, labels: Record<string, string
 type RowProps = {
 	label: string;
 	value: string | string[] | null | undefined;
-	/** The census taker's own words, shown in quotes on a line of their own. */
+	/** The census taker's own words */
 	note?: string;
 };
 
-/** One "Label: value" row, skipped entirely when there's no value or note. */
+/** One "Label: value" row, skipped if empty. */
 const Row = ({ label, value, note }: RowProps) => {
 	const text = Array.isArray(value) ? value.join(", ") : value;
 	return text || note ? (
@@ -46,10 +43,7 @@ type GlossaryRowProps = {
 	children?: React.ReactNode;
 };
 
-/**
- * A "Label: terms" row for flags that are glossary terms, each with an info
- * icon explaining it, and "children" after them. Skipped if none are true.
- */
+/** Like Row, but each true flag is a glossary term. Skipped if none are true. */
 const GlossaryRow = ({ label, flags, children }: GlossaryRowProps) => {
 	const terms = Object.entries(flags).flatMap(([key, value]) => (value && isGlossaryKey(key) ? [key] : []));
 	return terms.length ? (
@@ -73,10 +67,7 @@ type Props = {
 	session: Session | undefined;
 };
 
-/**
- * The info panel for one squirrel, plus what the census taker recorded about
- * that hectare during the same shift.
- */
+/** One squirrel's info panel, plus its hectare's survey for that shift. */
 export const SquirrelInfo = ({ squirrel, session }: Props) => {
 	// e.g. "Black, Cinnamon, White" -> "Gray with black, cinnamon, and white highlights"
 	const highlights = squirrel.highlightColor ? squirrel.highlightColor.toLowerCase().split(", ") : [];

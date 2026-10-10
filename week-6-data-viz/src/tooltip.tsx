@@ -6,11 +6,7 @@ const EDGE_PX = 8;
 
 const tipFor = (target: EventTarget | null) => (target instanceof Element ? target.closest("[data-tip]") : null);
 
-/**
- * Shows any element's "data-tip" text in a tooltip on hover, focus, or tap.
- * It's one shared, fixed-position element on <body>, so scrolling panels
- * (like the squirrel info) can't clip it.
- */
+/** Shows any element's "data-tip" on hover, focus or tap - fixed on <body> so panels can't clip it. */
 export const Tooltip = () => {
 	const [anchor, setAnchor] = React.useState<Element | null>(null);
 	const tooltip = React.useRef<HTMLDivElement>(null);
@@ -31,7 +27,7 @@ export const Tooltip = () => {
 			const element = tipFor(event.target);
 			if (element) setAnchor(element);
 		};
-		// Taps show the tip, and don't toggle a filter checkbox the icon sits in.
+		// Also keeps a tap from toggling the filter checkbox the icon sits in.
 		const onClick = (event: MouseEvent) => {
 			const element = tipFor(event.target);
 			if (element) {
@@ -57,8 +53,7 @@ export const Tooltip = () => {
 		};
 	}, []);
 
-	// Above the element if there's room, otherwise below it. Measured after
-	// render, once the tip's text is in and its size is known.
+	// Above the element if there's room, else below - measured once the text is in.
 	React.useLayoutEffect(() => {
 		if (!anchor || !tooltip.current) {
 			return;

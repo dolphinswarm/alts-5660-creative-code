@@ -30,18 +30,14 @@ import {
 } from "./park.js";
 import { SelectedPin, SquirrelHerd } from "./squirrel-herd.js";
 
-// Google Map Tiles API key - https://developers.google.com/maps/documentation/tile/3d-tiles
-// Vite inlines it at build time - locally from this folder's gitignored .env,
-// and in the deploy workflow from a GitHub secret. It ships to the browser
-// either way, so restrict it (in Google Cloud Console) to HTTP referrers for
-// localhost and your GitHub Pages site.
+// https://developers.google.com/maps/documentation/tile/3d-tiles
+// Inlined from .env (or a GitHub secret on deploy) - it ships to the browser, so restrict it by referrer.
 const GOOGLE_API_KEY: string | undefined = import.meta.env.GOOGLE_API_KEY;
 if (!GOOGLE_API_KEY) {
 	throw new Error("GOOGLE_API_KEY missing from .env");
 }
 
-// How far the camera may tilt away from looking straight down. Keeping it
-// steep means it never looks out at the horizon (and loads far fewer tiles).
+// Max tilt from straight down - never looking at the horizon loads far fewer tiles.
 const MAX_CAMERA_TILT = THREE.MathUtils.degToRad(45);
 // A click that moves less than this (in screen pixels) isn't a drag.
 const CLICK_MAX_MOVE_PX = 5;
@@ -51,12 +47,10 @@ const CLICK_MAX_MOVE_PX = 5;
 const FLIGHT_PRIORITY = -2;
 const CAMERA_LIMITS_PRIORITY = -0.5;
 
-// The glTF-only decoder build, bundled by Vite from three's own copy.
+// The glTF-only decoder build, bundled from three.
 const dracoLoader = new DRACOLoader().setDecoderPath(DRACO_GLTF_CONFIG);
 
-// Module-level so they're the same objects every render - TilesPlugin re-creates
-// its plugin (losing e.g. the Google session) whenever "args" changes, compared
-// only one level deep.
+// Module-level since TilesPlugin re-creates its plugin (and Google session) when "args" changes.
 const GOOGLE_AUTH_ARGS: ConstructorParameters<typeof GoogleCloudAuthPlugin> = [
 	{ apiToken: GOOGLE_API_KEY, autoRefreshToken: true },
 ];
@@ -164,8 +158,7 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 			const overview = getOverviewPose(park.current, camera);
 			camera.position.copy(overview.position);
 			camera.quaternion.copy(overview.rotation);
-			// The tiles under the overview may have all loaded already, with no
-			// "tiles-load-end" still to come.
+			// The tiles may have all loaded already, with no "tiles-load-end" to come.
 			queueSquirrelSnaps(herd, camera);
 		}
 		if (park.current && !flight.current) {
@@ -212,8 +205,7 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 				canvas.style.cursor = "grabbing";
 			}
 		};
-		// Grabbing the map mid-flight hands control straight back. Capture phase so
-		// this runs before the controls' own listeners, which ignore input while paused.
+		// Grabbing the map ends a flight - capture phase, since paused controls ignore input.
 		const onGrab = () => flight.current && endFlight();
 		canvas.addEventListener("pointerdown", onPointerDown);
 		canvas.addEventListener("pointerup", onPointerUp);
@@ -250,8 +242,7 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 		}
 	}, [herd, camera, onAttribution]);
 
-	// Single tiles failing (they log themselves) leave the map usable - only
-	// the root tileset failing, "tile" null, means there's no map at all.
+	// Only the root tileset failing (null "tile") leaves no map at all.
 	const handleLoadError = React.useCallback(
 		(event: { tile: object | null; error: Error }) => {
 			if (event.tile) {
@@ -280,13 +271,7 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 				<TilesPlugin plugin={ReorientationPlugin} args={REORIENTATION_ARGS} />
 			</TilesRenderer>
 
-			{/*
-			 * Map-style controls for 3D tiles: drag pans, scroll zooms toward the cursor,
-			 * right-drag (or Shift-drag) rotates. Their built-in collision keeps the camera
-			 * above the *highest* surface (usually treetops), which shoves it up whenever a
-			 * rotation swings under a canopy, so keepCameraAboveGround() replaces it.
-			 * maxAltitude is, despite the name, measured from straight down.
-			 */}
+			{/* keepCameraAboveGround() replaces their treetop collision. maxAltitude is from straight down. */}
 			<EnvironmentControls
 				ref={controls}
 				enableDamping

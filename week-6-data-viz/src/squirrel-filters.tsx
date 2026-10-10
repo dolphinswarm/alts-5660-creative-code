@@ -12,19 +12,13 @@ type FilterGroup = {
 	options: FilterOption[];
 };
 
-/**
- * A group of yes/no flags, which a squirrel can have several of or none,
- * plus a last option for the squirrels with none of them.
- */
+/** A group of yes/no flags, plus an option for squirrels with none of them. */
 const flagGroup = (label: React.ReactNode, flags: FilterOption[], noneLabel: string): FilterGroup => ({
 	label,
 	options: [...flags, { label: noneLabel, matches: (squirrel) => !flags.some((flag) => flag.matches(squirrel)) }],
 });
 
-/**
- * A squirrel passes a group if it matches any checked option. Everything
- * starts checked, so every squirrel is shown.
- */
+/** A squirrel passes a group if it matches any checked option. */
 const FILTER_GROUPS: FilterGroup[] = [
 	{
 		label: "Fur",
