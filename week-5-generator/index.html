@@ -4,15 +4,43 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Week 5 - Generator</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌲</text></svg>"
+		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Creepster&family=IM+Fell+English&display=swap"
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="../style.css" />
 		<script src="../shared/back-button.js" defer></script>
 		<style>
+			:root {
+				--bg: radial-gradient(ellipse at bottom, #2b302b, #070807 65%);
+				--surface: rgba(18, 20, 18, 0.9);
+				--text: #cfd6cc;
+				--accent: #b5c9b1;
+				--font-body: "IM Fell English", serif;
+				--font-display: "Creepster", cursive;
+			}
+
+			.content {
+				box-shadow: 0 0 3rem rgba(181, 201, 177, 0.08);
+			}
+
+			h1 {
+				font-weight: 400;
+				font-size: 2.5rem;
+				letter-spacing: 0.04em;
+			}
+
+			h2 {
+				font-weight: 400;
+				font-size: 1.75rem;
+			}
+
 			.content main video,
 			.walkthrough video {
 				display: block;
@@ -21,7 +49,7 @@
 				aspect-ratio: 16 / 9;
 				object-fit: contain;
 				background-color: black;
-				border-radius: 0.5rem;
+				border-radius: var(--radius);
 			}
 
 			.walkthrough {
@@ -30,12 +58,12 @@
 			}
 		</style>
 	</head>
-	<body class="quantico-regular">
+	<body>
 		<section class="content">
 			<back-button href="../index.html"></back-button>
 
 			<header>
-				<h1>Week 5: Generator</h1>
+				<h1>🌲 Week 5: Generator 🐺</h1>
 				<p>
 					A generative creepy forest built in
 					<a

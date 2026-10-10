@@ -4,15 +4,16 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Week 2 - Poster Generator</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎸</text></svg>"
+		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-			rel="stylesheet"
-		/>
-		<!-- Poster-only fonts, mixed into the generative type choices in data.ts --
-		     the exact weights/styles requested here must cover every entry in
-		     data.ts's HEADLINER_FONTS/SUPPORT_FONTS/VENUE_FONTS/ACCENT_FONTS pools. -->
+		<!-- Poster fonts, mixed into the generative type choices in data.ts - the
+		     exact weights/styles requested here must cover every entry in
+		     data.ts's HEADLINER_FONTS/SUPPORT_FONTS/VENUE_FONTS/ACCENT_FONTS pools.
+		     Anton and Special Elite double as this page's own fonts. -->
 		<link
 			href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,600;0,700;1,500;1,700&family=Indie+Flower&family=Space+Grotesk:wght@300;400;500;600;700&family=Allerta+Stencil&family=Anton&family=Archivo:wght@400;600;900&family=Bebas+Neue&family=Danfo&family=Jim+Nightshade&family=Kenia&family=Luckiest+Guy&family=Monoton&family=Nabla&family=Nosifer&family=Special+Elite&display=swap"
 			rel="stylesheet"
@@ -21,6 +22,27 @@
 		     Vite silently drops <link rel="stylesheet"> tags pointing outside its project root. -->
 		<script src="../shared/back-button.js" defer></script>
 		<style>
+			:root {
+				--bg: #1b1b1b;
+				--surface: #f3eee2;
+				--text: #1b1b1b;
+				--accent: #c1121f;
+				--accent-text: white;
+				--font-body: "Special Elite", monospace;
+				--font-display: "Anton", sans-serif;
+				--radius: 2px;
+			}
+
+			.content {
+				box-shadow: 0.5rem 0.5rem 0 #e63946;
+			}
+
+			h1 {
+				font-weight: 400;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+			}
+
 			.content main {
 				aspect-ratio: 2 / 3;
 			}
@@ -38,15 +60,21 @@
 			.controls button {
 				font-size: 20px;
 				padding: 0.4rem 0.75rem;
+				border: 2px solid var(--text);
+				transform: rotate(-1.5deg);
+			}
+
+			.controls button:nth-child(even) {
+				transform: rotate(1.5deg);
 			}
 		</style>
 	</head>
-	<body class="quantico-regular">
+	<body>
 		<section class="content">
 			<back-button href="../index.html"></back-button>
 
 			<header>
-				<h1>Week 2: Poster Generator</h1>
+				<h1>🎸 Week 2: Poster Generator 🤘</h1>
 				<p>
 					A generative DIY show-flyer poster, built with
 					<a href="https://pixijs.com/" target="_blank" rel="noopener"

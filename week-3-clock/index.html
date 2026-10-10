@@ -4,14 +4,39 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Week 3 - Clock</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>"
+		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap"
 			rel="stylesheet"
 		/>
 		<script src="../shared/back-button.js" defer></script>
 		<style>
+			:root {
+				--bg: #0a0a12;
+				--surface: #161824;
+				--text: #e8eaf2;
+				--accent: #ff5fa0;
+				--font-body: "Fredoka", sans-serif;
+				--radius: 1rem;
+			}
+
+			/* One stripe per chute, in that chute's marble color */
+			.content {
+				padding-top: 1.5rem;
+				background:
+					linear-gradient(90deg, #ffffff 0 25%, #ffb347 25% 50%, #ff5fa0 50% 75%, #8fe388 75%) top / 100% 6px no-repeat,
+					var(--surface);
+			}
+
+			h1 {
+				font-weight: 600;
+			}
+
 			.content main {
 				aspect-ratio: 6 / 7;
 				max-width: 600px;
@@ -19,12 +44,12 @@
 			}
 		</style>
 	</head>
-	<body class="quantico-regular">
+	<body>
 		<section class="content">
 			<back-button href="../index.html"></back-button>
 
 			<header>
-				<h1>Week 3: Clock</h1>
+				<h1>⏰ Week 3: Clock 🔮</h1>
 				<p>
 					A "marble clock" built with
 					<a href="https://pixijs.com/" target="_blank" rel="noopener"

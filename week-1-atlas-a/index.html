@@ -4,6 +4,10 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Week 1 - Atlas A</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🅰️</text></svg>"
+		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -11,6 +15,40 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="../style.css" />
+		<style>
+			:root {
+				--bg: radial-gradient(ellipse at top, #10204a, #03050c 70%);
+				--surface: rgba(10, 18, 38, 0.92);
+				--text: #dfe8ff;
+				--accent: #09dfdf;
+				--font-body: "Quantico", sans-serif;
+			}
+
+			.content {
+				border: 1px solid rgba(9, 223, 223, 0.35);
+				box-shadow: 0 0 2rem rgba(9, 223, 223, 0.15);
+			}
+
+			h1 {
+				text-shadow: 0 0 0.6rem rgba(9, 223, 223, 0.6);
+			}
+
+			/* Static GIF flashed over the canvas on scene changes */
+			#static {
+				position: absolute;
+				inset: 0;
+				width: 100%;
+				height: 100%;
+				border-radius: var(--radius);
+				pointer-events: none;
+				opacity: 0;
+				z-index: 1;
+			}
+
+			#static.on {
+				opacity: 1;
+			}
+		</style>
 		<script type="importmap">
 			{
 				"imports": {
@@ -21,12 +59,12 @@
 		</script>
 		<script src="../shared/back-button.js" defer></script>
 	</head>
-	<body class="quantico-regular">
+	<body>
 		<section class="content">
 			<back-button href="../index.html"></back-button>
 
 			<header>
-				<h1>Week 1: ATLAS A</h1>
+				<h1>🅰️ Week 1: ATLAS A 🛰️</h1>
 				<p>
 					Made using Three.JS. Contains 5 separate scenes, each with a different ATLAS A. Additionally, most of the scenes are animated or interactive:
 					<ul>

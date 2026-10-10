@@ -4,40 +4,221 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>ALTS 5660 - Creative Code</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧑‍💻</text></svg>"
+		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="style.css" />
-	</head>
-	<body class="quantico-regular">
-		<div class="content">
-			<header>
-				<h1>🧑‍💻ALTS 5660 - Creative Code🖥️</h1>
-			</header>
+		<style>
+			:root {
+				--bg: #111214;
+				--surface: #1c1d21;
+				--text: #ececec;
+				--muted: #9a9ca3;
+				--font-body: "Space Grotesk", sans-serif;
+			}
 
-			<main>
-				<ul id="project-list" class="project-list">
-					<li class="project-card">
-						<a href="week-1-atlas-a/">Week 1: ATLAS A</a>
-					</li>
-					<li class="project-card">
-						<a href="week-2-poster/">Week 2: Poster Generator</a>
-					</li>
-					<li class="project-card">
-						<a href="week-3-clock/">Week 3: Clock</a>
-					</li>
-					<li class="project-card">
-						<a href="week-4-looping-animation/">Week 4: Looping Animation</a>
-					</li>
-					<li class="project-card">
-						<a href="week-5-generator/">Week 5: Generator</a>
-					</li>
-				</ul>
-			</main>
-		</div>
+			body {
+				padding: 2rem 1rem 3rem;
+			}
+
+			.site-header {
+				max-width: 70rem;
+				margin: 0 auto 2rem;
+				text-align: center;
+			}
+
+			.site-header h1 {
+				margin: 0 0 0.5rem;
+				font-size: clamp(1.75rem, 5vw, 2.75rem);
+			}
+
+			.site-header p {
+				margin: 0;
+				color: var(--muted);
+			}
+
+			.project-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+				gap: 1.25rem;
+				max-width: 70rem;
+				margin: 0 auto;
+				padding: 0;
+			}
+
+			.project-card a {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				overflow: hidden;
+				color: inherit;
+				text-decoration: none;
+				background: var(--surface);
+				border: 1px solid #2c2e33;
+				border-top: 4px solid var(--accent);
+				border-radius: var(--radius);
+				transition:
+					transform 0.15s ease,
+					box-shadow 0.15s ease;
+			}
+
+			.project-card a:hover,
+			.project-card a:focus-visible {
+				transform: translateY(-4px);
+				box-shadow: 0 0.5rem 1.5rem color-mix(in srgb, var(--accent) 35%, transparent);
+				outline: none;
+			}
+
+			.project-card img {
+				display: block;
+				width: 100%;
+				aspect-ratio: 16 / 9;
+				object-fit: cover;
+				background: black;
+			}
+
+			.project-card .card-body {
+				display: flex;
+				flex-direction: column;
+				flex: 1;
+				gap: 0.4rem;
+				padding: 0.9rem 1rem 1rem;
+			}
+
+			.project-card .week {
+				font-size: 0.8rem;
+				font-weight: 700;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--accent);
+			}
+
+			.project-card h2 {
+				margin: 0;
+				font-size: 1.3rem;
+			}
+
+			.project-card p {
+				margin: 0;
+				flex: 1;
+				color: var(--muted);
+				font-size: 0.95rem;
+			}
+
+			.tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.35rem;
+				margin: 0.25rem 0 0;
+				padding: 0;
+			}
+
+			.tags li {
+				padding: 0.1rem 0.5rem;
+				font-size: 0.75rem;
+				border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+				border-radius: 999px;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="site-header">
+			<h1>🧑‍💻 ALTS 5660 - Creative Code 🎨</h1>
+			<p>Weekly creative coding projects. Pick one to open it.</p>
+		</header>
+
+		<main>
+			<ul class="project-grid">
+				<li class="project-card" style="--accent: #09dfdf">
+					<a href="week-1-atlas-a/">
+						<img src="thumbs/week-1-atlas-a.webp" alt="" loading="lazy" />
+						<div class="card-body">
+							<span class="week">🅰️ Week 1</span>
+							<h2>ATLAS A</h2>
+							<p>Five Three.js scenes, each with its own take on the letter A.</p>
+							<ul class="tags">
+								<li>Three.js</li>
+							</ul>
+						</div>
+					</a>
+				</li>
+				<li class="project-card" style="--accent: #e63946">
+					<a href="week-2-poster/">
+						<img src="thumbs/week-2-poster.webp" alt="" loading="lazy" />
+						<div class="card-body">
+							<span class="week">🎸 Week 2</span>
+							<h2>Poster Generator</h2>
+							<p>Generative DIY show flyers with audio-reactive stickers.</p>
+							<ul class="tags">
+								<li>PixiJS</li>
+								<li>Tone.js</li>
+							</ul>
+						</div>
+					</a>
+				</li>
+				<li class="project-card" style="--accent: #ff5fa0">
+					<a href="week-3-clock/">
+						<img src="thumbs/week-3-clock.webp" alt="" loading="lazy" />
+						<div class="card-body">
+							<span class="week">⏰ Week 3</span>
+							<h2>Clock</h2>
+							<p>A marble clock where every peg plays a note.</p>
+							<ul class="tags">
+								<li>PixiJS</li>
+								<li>Matter.js</li>
+								<li>Tone.js</li>
+							</ul>
+						</div>
+					</a>
+				</li>
+				<li class="project-card" style="--accent: #7fd1ae">
+					<a href="week-4-looping-animation/">
+						<img src="thumbs/week-4-looping-animation.webp" alt="" loading="lazy" />
+						<div class="card-body">
+							<span class="week">🔺 Week 4</span>
+							<h2>Looping Animation</h2>
+							<p>An endless geometric tunnel.</p>
+							<ul class="tags">
+								<li>TouchDesigner</li>
+							</ul>
+						</div>
+					</a>
+				</li>
+				<li class="project-card" style="--accent: #b5c9b1">
+					<a href="week-5-generator/">
+						<img src="thumbs/week-5-generator.webp" alt="" loading="lazy" />
+						<div class="card-body">
+							<span class="week">🌲 Week 5</span>
+							<h2>Generator</h2>
+							<p>A generative creepy forest.</p>
+							<ul class="tags">
+								<li>TouchDesigner</li>
+							</ul>
+						</div>
+					</a>
+				</li>
+				<li class="project-card" style="--accent: #e07b39">
+					<a href="week-6-data-viz/">
+						<img src="thumbs/week-6-data-viz.webp" alt="" loading="lazy" />
+						<div class="card-body">
+							<span class="week">🐿️ Week 6</span>
+							<h2>Data Visualization</h2>
+							<p>2,919 squirrels from the 2018 Central Park Squirrel Census, mapped in 3D.</p>
+							<ul class="tags">
+								<li>Three.js</li>
+								<li>3D Tiles</li>
+							</ul>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</main>
 	</body>
 </html>
-

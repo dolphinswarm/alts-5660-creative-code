@@ -4,22 +4,51 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Week 4 - Looping Animation</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔺</text></svg>"
+		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Syncopate:wght@700&display=swap"
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="../style.css" />
 		<script src="../shared/back-button.js" defer></script>
 		<style>
+			:root {
+				--bg: linear-gradient(135deg, #161817, #232725);
+				--surface: #2a2e2c;
+				--text: #eef3ef;
+				--accent: #7fd1ae;
+				--font-body: "Outfit", sans-serif;
+				--font-display: "Syncopate", sans-serif;
+				--radius: 0;
+			}
+
+			/* Clipped corner, echoing the tunnel's triangles */
+			.content {
+				clip-path: polygon(0 0, calc(100% - 2rem) 0, 100% 2rem, 100% 100%, 0 100%);
+				border-left: 4px solid var(--accent);
+			}
+
+			h1 {
+				font-size: 1.5rem;
+				text-transform: uppercase;
+			}
+
+			h2 {
+				font-size: 1.1rem;
+			}
+
 			.content main img,
 			.walkthrough video {
 				display: block;
 				width: 100%;
 				height: 100%;
 				object-fit: contain;
-				border-radius: 0.5rem;
+				border-radius: var(--radius);
 			}
 
 			.walkthrough {
@@ -33,12 +62,12 @@
 			}
 		</style>
 	</head>
-	<body class="quantico-regular">
+	<body>
 		<section class="content">
 			<back-button href="../index.html"></back-button>
 
 			<header>
-				<h1>Week 4: Looping Animation</h1>
+				<h1>🔺 Week 4: Looping Animation 🔁</h1>
 				<p>
 					A looping animation built in
 					<a
