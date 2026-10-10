@@ -18,7 +18,7 @@ type FilterGroup = {
  */
 const flagGroup = (label: React.ReactNode, flags: FilterOption[], noneLabel: string): FilterGroup => ({
 	label,
-	options: [...flags, { label: noneLabel, matches: (s) => !flags.some((flag) => flag.matches(s)) }],
+	options: [...flags, { label: noneLabel, matches: (squirrel) => !flags.some((flag) => flag.matches(squirrel)) }],
 });
 
 /**
@@ -29,34 +29,34 @@ const FILTER_GROUPS: FilterGroup[] = [
 	{
 		label: "Fur",
 		options: [
-			{ label: "Gray", matches: (s) => s.furColor === "Gray" },
-			{ label: "Cinnamon", matches: (s) => s.furColor === "Cinnamon" },
-			{ label: "Black", matches: (s) => s.furColor === "Black" },
+			{ label: "Gray", matches: (squirrel) => squirrel.furColor === "Gray" },
+			{ label: "Cinnamon", matches: (squirrel) => squirrel.furColor === "Cinnamon" },
+			{ label: "Black", matches: (squirrel) => squirrel.furColor === "Black" },
 		],
 	},
 	{
 		label: "Shift",
 		options: [
-			{ label: "AM", matches: (s) => s.shift === "AM" },
-			{ label: "PM", matches: (s) => s.shift === "PM" },
+			{ label: "AM", matches: (squirrel) => squirrel.shift === "AM" },
+			{ label: "PM", matches: (squirrel) => squirrel.shift === "PM" },
 		],
 	},
 	{
 		label: "Where",
 		options: [
-			{ label: "On the ground", matches: (s) => s.location === "Ground Plane" },
-			{ label: "Up a tree", matches: (s) => s.location === "Above Ground" },
+			{ label: "On the ground", matches: (squirrel) => squirrel.location === "Ground Plane" },
+			{ label: "Up a tree", matches: (squirrel) => squirrel.location === "Above Ground" },
 		],
 	},
 	flagGroup(
 		"Actions",
 		[
-			{ label: "Running", matches: (s) => s.activities.running },
-			{ label: "Chasing", matches: (s) => s.activities.chasing },
-			{ label: "Climbing", matches: (s) => s.activities.climbing },
-			{ label: "Eating", matches: (s) => s.activities.eating },
-			{ label: "Foraging", matches: (s) => s.activities.foraging },
-			{ label: "Approaching people", matches: (s) => s.humans.approaches },
+			{ label: "Running", matches: (squirrel) => squirrel.activities.running },
+			{ label: "Chasing", matches: (squirrel) => squirrel.activities.chasing },
+			{ label: "Climbing", matches: (squirrel) => squirrel.activities.climbing },
+			{ label: "Eating", matches: (squirrel) => squirrel.activities.eating },
+			{ label: "Foraging", matches: (squirrel) => squirrel.activities.foraging },
+			{ label: "Approaching people", matches: (squirrel) => squirrel.humans.approaches },
 		],
 		"None of these",
 	),
@@ -65,17 +65,17 @@ const FILTER_GROUPS: FilterGroup[] = [
 			Sounds <SoundsLink />
 		</>,
 		[
-			{ label: <GlossaryTerm term="kuks" />, matches: (s) => s.sounds.kuks },
-			{ label: <GlossaryTerm term="quaas" />, matches: (s) => s.sounds.quaas },
-			{ label: <GlossaryTerm term="moans" />, matches: (s) => s.sounds.moans },
+			{ label: <GlossaryTerm term="kuks" />, matches: (squirrel) => squirrel.sounds.kuks },
+			{ label: <GlossaryTerm term="quaas" />, matches: (squirrel) => squirrel.sounds.quaas },
+			{ label: <GlossaryTerm term="moans" />, matches: (squirrel) => squirrel.sounds.moans },
 		],
 		"Silent",
 	),
 	flagGroup(
 		"Tail",
 		[
-			{ label: <GlossaryTerm term="flags" />, matches: (s) => s.tail.flags },
-			{ label: <GlossaryTerm term="twitches" />, matches: (s) => s.tail.twitches },
+			{ label: <GlossaryTerm term="flags" />, matches: (squirrel) => squirrel.tail.flags },
+			{ label: <GlossaryTerm term="twitches" />, matches: (squirrel) => squirrel.tail.twitches },
 		],
 		"Still",
 	),
@@ -88,7 +88,9 @@ export const DEFAULT_FILTER_CHECKS: FilterChecks = FILTER_GROUPS.map((group) => 
 
 /** A test for whether a squirrel passes the filters checked in "checks". */
 export const matchesFilters = (checks: FilterChecks) => {
-	const checkedByGroup = FILTER_GROUPS.map((group, g) => group.options.filter((_, o) => checks[g][o]));
+	const checkedByGroup = FILTER_GROUPS.map((group, groupIndex) =>
+		group.options.filter((_, optionIndex) => checks[groupIndex][optionIndex]),
+	);
 	return (squirrel: Squirrel) =>
 		checkedByGroup.every((checked) => checked.some((option) => option.matches(squirrel)));
 };
@@ -109,18 +111,25 @@ export const SquirrelFilters = ({ squirrels, checks, onChange }: Props) => {
 		[squirrels],
 	);
 
-	const toggle = (g: number, o: number) =>
-		onChange(checks.map((group, gi) => (gi === g ? group.map((checked, oi) => (oi === o ? !checked : checked)) : group)));
+	const toggle = (groupIndex: number, optionIndex: number) => {
+		const next = checks.map((groupChecks) => [...groupChecks]);
+		next[groupIndex][optionIndex] = !next[groupIndex][optionIndex];
+		onChange(next);
+	};
 
 	return (
 		<>
-			{FILTER_GROUPS.map((group, g) => (
-				<fieldset key={g}>
+			{FILTER_GROUPS.map((group, groupIndex) => (
+				<fieldset key={groupIndex}>
 					<legend>{group.label}</legend>
-					{group.options.map((option, o) => (
-						<label key={o}>
-							<input type="checkbox" checked={checks[g][o]} onChange={() => toggle(g, o)} /> {option.label}{" "}
-							<span className="count">{counts[g][o]}</span>
+					{group.options.map((option, optionIndex) => (
+						<label key={optionIndex}>
+							<input
+								type="checkbox"
+								checked={checks[groupIndex][optionIndex]}
+								onChange={() => toggle(groupIndex, optionIndex)}
+							/>{" "}
+							{option.label} <span className="count">{counts[groupIndex][optionIndex]}</span>
 						</label>
 					))}
 				</fieldset>

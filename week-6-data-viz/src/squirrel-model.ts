@@ -60,10 +60,10 @@ export const loadSquirrelModel = async (url: string): Promise<SquirrelModel> => 
 
 	return {
 		height: size.y / length,
-		parts: meshes.map((mesh, i) => {
+		parts: meshes.map((mesh, index) => {
 			const material = (mesh.material as THREE.MeshStandardMaterial).clone();
 			let tint: SquirrelModelPart["tint"] = null;
-			if (i === bodyIndex) {
+			if (index === bodyIndex) {
 				tint = "fur";
 			} else if (luminance(material) < bodyLuminance) {
 				tint = "furDark";
@@ -72,7 +72,7 @@ export const loadSquirrelModel = async (url: string): Promise<SquirrelModel> => 
 				// Instance colors multiply with the material color, so start from white.
 				material.color.set(0xffffff);
 			}
-			return { geometry: geometries[i], material, tint };
+			return { geometry: geometries[index], material, tint };
 		}),
 	};
 };

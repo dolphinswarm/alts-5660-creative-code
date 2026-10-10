@@ -56,9 +56,9 @@ const GlossaryRow = ({ label, flags, children }: GlossaryRowProps) => {
 		<>
 			<dt>{label}</dt>
 			<dd>
-				{terms.map((term, k) => (
+				{terms.map((term, termIndex) => (
 					<React.Fragment key={term}>
-						{k > 0 ? ", " : null}
+						{termIndex > 0 ? ", " : null}
 						<GlossaryTerm term={term} />
 					</React.Fragment>
 				))}{" "}
@@ -127,8 +127,8 @@ export const SquirrelInfo = ({ squirrel, session }: Props) => {
 					</dl>
 				</>
 			) : null}
-			{stories.map((story, k) => (
-				<blockquote key={k}>
+			{stories.map((story, storyIndex) => (
+				<blockquote key={storyIndex}>
 					{story.text}
 					{story.topics.length > 0 ? <footer>{story.topics.join(" · ")}</footer> : null}
 				</blockquote>

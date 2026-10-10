@@ -42,18 +42,18 @@ export const latLonToScene = (tiles: THREE.Object3D, lat: number, lon: number) =
 
 /** Fits a ParkFrame to the squirrels' ellipsoid positions. */
 export const computeParkFrame = (herd: Herd, tiles: THREE.Object3D): ParkFrame => {
-	const points = Array.from({ length: herd.count }, (_, i) => ({
-		x: herd.basePositions[i * 3],
-		z: herd.basePositions[i * 3 + 2],
+	const points = Array.from({ length: herd.count }, (_, index) => ({
+		x: herd.basePositions[index * 3],
+		z: herd.basePositions[index * 3 + 2],
 	}));
-	const cx = points.reduce((sum, p) => sum + p.x, 0) / herd.count;
-	const cz = points.reduce((sum, p) => sum + p.z, 0) / herd.count;
-	const offsets = points.map((p) => ({ dx: p.x - cx, dz: p.z - cz }));
+	const centroidX = points.reduce((sum, point) => sum + point.x, 0) / herd.count;
+	const centroidZ = points.reduce((sum, point) => sum + point.z, 0) / herd.count;
+	const offsets = points.map((point) => ({ offsetX: point.x - centroidX, offsetZ: point.z - centroidZ }));
 	// The park's long axis is the principal axis of the squirrels' positions.
-	const xx = offsets.reduce((sum, { dx }) => sum + dx * dx, 0);
-	const zz = offsets.reduce((sum, { dz }) => sum + dz * dz, 0);
-	const xz = offsets.reduce((sum, { dx, dz }) => sum + dx * dz, 0);
-	const angle = 0.5 * Math.atan2(2 * xz, xx - zz);
+	const spreadX = offsets.reduce((sum, { offsetX }) => sum + offsetX * offsetX, 0);
+	const spreadZ = offsets.reduce((sum, { offsetZ }) => sum + offsetZ * offsetZ, 0);
+	const spreadXZ = offsets.reduce((sum, { offsetX, offsetZ }) => sum + offsetX * offsetZ, 0);
+	const angle = 0.5 * Math.atan2(2 * spreadXZ, spreadX - spreadZ);
 	const axis = new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle));
 	const north = latLonToScene(tiles, PARK_CENTER.lat + 0.01, PARK_CENTER.lon).clone();
 	north.sub(latLonToScene(tiles, PARK_CENTER.lat, PARK_CENTER.lon)).setY(0).normalize();
@@ -62,18 +62,19 @@ export const computeParkFrame = (herd: Herd, tiles: THREE.Object3D): ParkFrame =
 	}
 	const across = new THREE.Vector3(-axis.z, 0, axis.x);
 
-	// Each squirrel's position along (u) and across (v) the park.
-	const us = offsets.map(({ dx, dz }) => dx * axis.x + dz * axis.z);
-	const vs = offsets.map(({ dx, dz }) => dx * across.x + dz * across.z);
-	const [minU, maxU, minV, maxV] = [Math.min(...us), Math.max(...us), Math.min(...vs), Math.max(...vs)];
+	// Each squirrel's position along and across the park.
+	const alongs = offsets.map(({ offsetX, offsetZ }) => offsetX * axis.x + offsetZ * axis.z);
+	const acrosses = offsets.map(({ offsetX, offsetZ }) => offsetX * across.x + offsetZ * across.z);
+	const [minAlong, maxAlong] = [Math.min(...alongs), Math.max(...alongs)];
+	const [minAcross, maxAcross] = [Math.min(...acrosses), Math.max(...acrosses)];
 	return {
-		center: new THREE.Vector3(cx, 0, cz)
-			.addScaledVector(axis, (minU + maxU) / 2)
-			.addScaledVector(across, (minV + maxV) / 2),
+		center: new THREE.Vector3(centroidX, 0, centroidZ)
+			.addScaledVector(axis, (minAlong + maxAlong) / 2)
+			.addScaledVector(across, (minAcross + maxAcross) / 2),
 		axis,
 		across,
-		halfLength: (maxU - minU) / 2,
-		halfWidth: (maxV - minV) / 2,
+		halfLength: (maxAlong - minAlong) / 2,
+		halfWidth: (maxAcross - minAcross) / 2,
 		north,
 		east: north.clone().cross(new THREE.Vector3(0, 1, 0)),
 	};
@@ -128,24 +129,24 @@ export const clampCameraToPark = (park: ParkFrame, camera: THREE.PerspectiveCame
 	const ceiling = getOverviewHeight(park, camera) * CAMERA_MAX_HEIGHT_SCALE;
 	const rise = camera.position.y - previous.y;
 	if (camera.position.y > ceiling && rise > 0) {
-		const t = Math.max(0, (ceiling - previous.y) / rise);
-		camera.position.lerpVectors(previous, cameraMove.copy(camera.position), t);
+		const fraction = Math.max(0, (ceiling - previous.y) / rise);
+		camera.position.lerpVectors(previous, cameraMove.copy(camera.position), fraction);
 	}
 	camera.position.y = Math.min(camera.position.y, ceiling);
 
 	const { center, axis, across, halfLength, halfWidth } = park;
-	const dx = camera.position.x - center.x;
-	const dz = camera.position.z - center.z;
-	const u = THREE.MathUtils.clamp(
-		dx * axis.x + dz * axis.z,
+	const offsetX = camera.position.x - center.x;
+	const offsetZ = camera.position.z - center.z;
+	const along = THREE.MathUtils.clamp(
+		offsetX * axis.x + offsetZ * axis.z,
 		-halfLength - CAMERA_BOUNDS_MARGIN,
 		halfLength + CAMERA_BOUNDS_MARGIN,
 	);
-	const v = THREE.MathUtils.clamp(
-		dx * across.x + dz * across.z,
+	const sideways = THREE.MathUtils.clamp(
+		offsetX * across.x + offsetZ * across.z,
 		-halfWidth - CAMERA_BOUNDS_MARGIN,
 		halfWidth + CAMERA_BOUNDS_MARGIN,
 	);
-	camera.position.x = center.x + axis.x * u + across.x * v;
-	camera.position.z = center.z + axis.z * u + across.z * v;
+	camera.position.x = center.x + axis.x * along + across.x * sideways;
+	camera.position.z = center.z + axis.z * along + across.z * sideways;
 };

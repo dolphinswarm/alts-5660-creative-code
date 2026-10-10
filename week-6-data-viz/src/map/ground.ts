@@ -24,12 +24,12 @@ const squirrelPosition = new THREE.Vector3();
 type Surface = { top: number; bottom: number; bottomError: number };
 
 /**
- * The loaded tile surfaces at (x, z): the highest (treetops, roofs) and the
+ * The loaded tile surfaces at (sceneX, sceneZ): the highest (treetops, roofs) and the
  * lowest (usually the ground under them), plus the geometric error of the
  * tile the lowest came from. Null if nothing believable has loaded there yet.
  */
-export const probeSurfaceAt = (tiles: THREE.Object3D, x: number, z: number): Surface | null => {
-	raycaster.set(rayOrigin.set(x, GROUND_PROBE_Y, z), down);
+export const probeSurfaceAt = (tiles: THREE.Object3D, sceneX: number, sceneZ: number): Surface | null => {
+	raycaster.set(rayOrigin.set(sceneX, GROUND_PROBE_Y, sceneZ), down);
 	const hits = raycaster.intersectObject(tiles, true).filter((hit) => hit.point.y > MIN_GROUND_Y);
 	if (hits.length === 0) {
 		return null;
@@ -44,10 +44,10 @@ export const probeSurfaceAt = (tiles: THREE.Object3D, x: number, z: number): Sur
 
 /** Starts a new snapping pass over every squirrel, nearest the camera first. */
 export const queueSquirrelSnaps = (herd: Herd, camera: THREE.Camera) => {
-	const distancesSq = Array.from({ length: herd.count }, (_, i) =>
-		camera.position.distanceToSquared(squirrelPosition.fromArray(herd.positions, i * 3)),
+	const distancesSq = Array.from({ length: herd.count }, (_, index) =>
+		camera.position.distanceToSquared(squirrelPosition.fromArray(herd.positions, index * 3)),
 	);
-	herd.snapQueue = Array.from(distancesSq.keys()).sort((a, b) => distancesSq[b] - distancesSq[a]);
+	herd.snapQueue = Array.from(distancesSq.keys()).sort((first, second) => distancesSq[second] - distancesSq[first]);
 };
 
 /**
@@ -64,16 +64,16 @@ export const queueSquirrelSnaps = (herd: Herd, camera: THREE.Camera) => {
 export const snapSomeSquirrelsToGround = (herd: Herd, tiles: THREE.Object3D) => {
 	const start = performance.now();
 	while (herd.snapQueue.length > 0 && performance.now() - start < SNAP_BUDGET_MS) {
-		const i = herd.snapQueue.pop()!;
-		const surface = probeSurfaceAt(tiles, herd.basePositions[i * 3], herd.basePositions[i * 3 + 2]);
-		if (!surface || surface.bottomError > herd.groundError[i]) {
+		const index = herd.snapQueue.pop()!;
+		const surface = probeSurfaceAt(tiles, herd.basePositions[index * 3], herd.basePositions[index * 3 + 2]);
+		if (!surface || surface.bottomError > herd.groundError[index]) {
 			continue;
 		}
-		herd.groundError[i] = surface.bottomError;
+		herd.groundError[index] = surface.bottomError;
 		// Climbed heights are from the ground, but never above the treetops.
-		const target = Math.min(surface.bottom + herd.climbHeights[i], surface.top);
-		if (Math.abs(target - herd.positions[i * 3 + 1]) > 0.01) {
-			herd.positions[i * 3 + 1] = target;
+		const target = Math.min(surface.bottom + herd.climbHeights[index], surface.top);
+		if (Math.abs(target - herd.positions[index * 3 + 1]) > 0.01) {
+			herd.positions[index * 3 + 1] = target;
 			herd.dirty = true;
 		}
 	}

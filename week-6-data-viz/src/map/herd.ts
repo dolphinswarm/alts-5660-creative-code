@@ -61,8 +61,8 @@ export const createHerd = (census: SquirrelCensus, model: SquirrelModel): Herd =
 
 	const furColor = new THREE.Color();
 	const colors = new Float32Array(count * 3);
-	census.squirrels.forEach((squirrel, i) => {
-		furColor.setHex(FUR_COLORS[squirrel.furColor] ?? 0xffffff).toArray(colors, i * 3);
+	census.squirrels.forEach((squirrel, index) => {
+		furColor.setHex(FUR_COLORS[squirrel.furColor] ?? 0xffffff).toArray(colors, index * 3);
 	});
 
 	return {
@@ -70,9 +70,9 @@ export const createHerd = (census: SquirrelCensus, model: SquirrelModel): Herd =
 		model,
 		positions,
 		basePositions: new Float32Array(count * 3),
-		climbHeights: Float32Array.from(census.squirrels, (s) => (s.aboveGroundFeet ?? 0) * FEET_TO_METERS),
+		climbHeights: Float32Array.from(census.squirrels, (squirrel) => (squirrel.aboveGroundFeet ?? 0) * FEET_TO_METERS),
 		scales,
-		yaws: Float32Array.from({ length: count }, (_, i) => (((Math.sin(i * 12.9898) * 43758.5453) % 1) + 1) * Math.PI),
+		yaws: Float32Array.from({ length: count }, (_, index) => (((Math.sin(index * 12.9898) * 43758.5453) % 1) + 1) * Math.PI),
 		shown: new Uint8Array(count).fill(1),
 		groundError: new Float64Array(count).fill(Infinity),
 		snapQueue: [],
@@ -82,7 +82,7 @@ export const createHerd = (census: SquirrelCensus, model: SquirrelModel): Herd =
 		matrices: new THREE.InstancedBufferAttribute(new Float32Array(count * 16), 16).setUsage(THREE.DynamicDrawUsage),
 		tints: {
 			fur: new THREE.InstancedBufferAttribute(colors, 3),
-			furDark: new THREE.InstancedBufferAttribute(colors.map((c) => c * 0.55), 3),
+			furDark: new THREE.InstancedBufferAttribute(colors.map((channel) => channel * 0.55), 3),
 		},
 		markerAttributes: {
 			position: new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage),
@@ -93,13 +93,13 @@ export const createHerd = (census: SquirrelCensus, model: SquirrelModel): Herd =
 };
 
 /** Indices of the squirrels flagged 1 in "shown" (see Herd.shown). */
-export const getShownSquirrels = (shown: Uint8Array) => Array.from(shown).flatMap((s, i) => (s ? [i] : []));
+export const getShownSquirrels = (shown: Uint8Array) =>
+	Array.from(shown).flatMap((isShown, index) => (isShown ? [index] : []));
 
 /** Puts every squirrel on the ellipsoid under its lat/long, ready to be snapped to the ground. */
 export const placeHerd = (herd: Herd, census: SquirrelCensus, toScene: (lat: number, lon: number) => THREE.Vector3) => {
-	census.squirrels.forEach((squirrel, i) => {
-		const { x, y, z } = toScene(squirrel.lat, squirrel.lon);
-		herd.basePositions.set([x, y, z], i * 3);
+	census.squirrels.forEach((squirrel, index) => {
+		toScene(squirrel.lat, squirrel.lon).toArray(herd.basePositions, index * 3);
 	});
 	herd.positions.set(herd.basePositions);
 	herd.groundError.fill(Infinity);
@@ -130,25 +130,25 @@ export const updateHerdInstances = (herd: Herd, camera: THREE.Camera) => {
 	herd.dirty = false;
 	herd.lastCameraPosition.copy(camera.position);
 
-	herd.scales.forEach((_, i) => {
-		instancePosition.fromArray(herd.positions, i * 3);
-		const length = herd.shown[i]
+	herd.scales.forEach((_, index) => {
+		instancePosition.fromArray(herd.positions, index * 3);
+		const length = herd.shown[index]
 			? Math.max(SQUIRREL_LENGTH_METERS, camera.position.distanceTo(instancePosition) * SQUIRREL_MIN_ANGULAR_SIZE)
 			: 0;
-		herd.scales[i] = length;
-		instanceRotation.setFromAxisAngle(upAxis, herd.yaws[i]);
+		herd.scales[index] = length;
+		instanceRotation.setFromAxisAngle(upAxis, herd.yaws[index]);
 		instanceMatrix.compose(instancePosition, instanceRotation, instanceScale.setScalar(length));
-		instanceMatrix.toArray(herd.matrices.array, i * 16);
+		instanceMatrix.toArray(herd.matrices.array, index * 16);
 	});
 	herd.matrices.needsUpdate = true;
 	herd.markerAttributes.position.needsUpdate = true;
 	herd.markerAttributes.squirrelScale.needsUpdate = true;
 };
 
-/** The middle of squirrel "i"'s body (its position is its feet). */
-export const getSquirrelCenter = (herd: Herd, i: number, target: THREE.Vector3) => {
-	target.fromArray(herd.positions, i * 3);
-	target.y += herd.scales[i] * herd.model.height * 0.5;
+/** The middle of squirrel "index"'s body (its position is its feet). */
+export const getSquirrelCenter = (herd: Herd, index: number, target: THREE.Vector3) => {
+	target.fromArray(herd.positions, index * 3);
+	target.y += herd.scales[index] * herd.model.height * 0.5;
 	return target;
 };
 
@@ -172,31 +172,31 @@ export const pickSquirrel = (
 		return -1;
 	}
 	const rect = canvas.getBoundingClientRect();
-	const px = clientX - rect.left;
-	const py = clientY - rect.top;
+	const cursorX = clientX - rect.left;
+	const cursorY = clientY - rect.top;
 	// Screen pixels per meter, at 1 meter from the camera.
 	const pixelsPerMeter = rect.height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
 	let best = -1;
 	// Distance from the cursor as a fraction of the pick radius - under 1 is a hit.
 	let bestScore = 1;
-	herd.shown.forEach((shown, i) => {
-		if (!shown) {
+	herd.shown.forEach((isShown, index) => {
+		if (!isShown) {
 			return;
 		}
-		getSquirrelCenter(herd, i, squirrelCenter);
+		getSquirrelCenter(herd, index, squirrelCenter);
 		const distance = camera.position.distanceTo(squirrelCenter);
 		projected.copy(squirrelCenter).project(camera);
 		if (projected.z < -1 || projected.z > 1) {
 			return; // behind the camera or past the far plane
 		}
-		const dx = ((projected.x + 1) / 2) * rect.width - px;
-		const dy = ((1 - projected.y) / 2) * rect.height - py;
+		const offsetX = ((projected.x + 1) / 2) * rect.width - cursorX;
+		const offsetY = ((1 - projected.y) / 2) * rect.height - cursorY;
 		// Close squirrels are big on screen, so they get a bigger target.
-		const radius = Math.max(PICK_RADIUS_PX, ((herd.scales[i] * pixelsPerMeter) / distance) * 0.6);
-		const score = (dx * dx + dy * dy) / (radius * radius);
+		const radius = Math.max(PICK_RADIUS_PX, ((herd.scales[index] * pixelsPerMeter) / distance) * 0.6);
+		const score = (offsetX * offsetX + offsetY * offsetY) / (radius * radius);
 		if (score < bestScore) {
 			bestScore = score;
-			best = i;
+			best = index;
 		}
 	});
 	return best;

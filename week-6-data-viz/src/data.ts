@@ -87,8 +87,8 @@ const parseDate = (raw: string) =>
 const parseBool = (raw: string | undefined) => raw?.toLowerCase() === "true";
 
 const parseNumber = (raw: string | undefined) => {
-	const n = parseFloat(raw ?? "");
-	return Number.isFinite(n) ? n : null;
+	const value = parseFloat(raw ?? "");
+	return Number.isFinite(value) ? value : null;
 };
 
 /**

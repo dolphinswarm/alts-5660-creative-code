@@ -42,7 +42,7 @@ const App = () => {
 	const { shown, shownCount } = React.useMemo(() => {
 		const matches = matchesFilters(checks);
 		const shown = Uint8Array.from(squirrels ?? [], (squirrel) => (matches(squirrel) ? 1 : 0));
-		return { shown, shownCount: shown.reduce((sum, s) => sum + s, 0) };
+		return { shown, shownCount: shown.reduce((sum, isShown) => sum + isShown, 0) };
 	}, [squirrels, checks]);
 
 	// A squirrel the filters just hid can't stay selected.

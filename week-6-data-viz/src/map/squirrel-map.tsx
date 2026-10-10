@@ -66,8 +66,8 @@ const REORIENTATION_ARGS: ConstructorParameters<typeof ReorientationPlugin> = [
 ];
 
 export type SquirrelMapHandle = {
-	/** Selects squirrel "i" and flies to it. */
-	focusSquirrel: (i: number) => void;
+	/** Selects squirrel "index" and flies to it. */
+	focusSquirrel: (index: number) => void;
 	showPark: () => void;
 };
 
@@ -126,12 +126,12 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 	}, []);
 
 	const focusSquirrel = React.useCallback(
-		(i: number) => {
+		(index: number) => {
 			if (!herd?.placed || !tiles.current || !controls.current) {
 				return;
 			}
-			onSelect(i);
-			flyTo(getSquirrelViewPose(herd, i, camera, tiles.current.group, controls.current.cameraRadius));
+			onSelect(index);
+			flyTo(getSquirrelViewPose(herd, index, camera, tiles.current.group, controls.current.cameraRadius));
 		},
 		[herd, camera, onSelect, flyTo],
 	);
@@ -241,8 +241,8 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 		tiles.current.getAttributions(attributions);
 		onAttribution(
 			attributions
-				.filter((a) => a.type === "string")
-				.map((a) => a.value)
+				.filter((attribution) => attribution.type === "string")
+				.map((attribution) => attribution.value)
 				.join(" "),
 		);
 		if (herd?.placed) {

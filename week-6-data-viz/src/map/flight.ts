@@ -21,14 +21,14 @@ export type Flight = {
 	elapsed: number;
 };
 
-/** A glide from the camera's current pose to "to", arcing up over the park on longer trips. */
-export const createFlight = (camera: THREE.Camera, to: Pose): Flight => {
-	const distance = camera.position.distanceTo(to.position);
+/** A glide from the camera's current pose to "destination", arcing up over the park on longer trips. */
+export const createFlight = (camera: THREE.Camera, destination: Pose): Flight => {
+	const distance = camera.position.distanceTo(destination.position);
 	return {
 		from: camera.position.clone(),
-		to: to.position,
+		to: destination.position,
 		fromRotation: camera.quaternion.clone(),
-		toRotation: to.rotation,
+		toRotation: destination.rotation,
 		arcHeight: Math.min(distance * 0.3, 300),
 		duration: THREE.MathUtils.clamp(0.6 + distance / 1500, 0.6, 2.5),
 		elapsed: 0,
@@ -43,27 +43,27 @@ export const createFlight = (camera: THREE.Camera, to: Pose): Flight => {
  */
 export const stepFlight = (flight: Flight, camera: THREE.Camera, delta: number) => {
 	flight.elapsed += delta;
-	const t = Math.min(flight.elapsed / flight.duration, 1);
-	const eased = t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
+	const progress = Math.min(flight.elapsed / flight.duration, 1);
+	const eased = progress < 0.5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
 	camera.position.lerpVectors(flight.from, flight.to, eased);
 	camera.position.y += Math.sin(Math.PI * eased) * flight.arcHeight;
 	camera.quaternion.slerpQuaternions(flight.fromRotation, flight.toRotation, eased);
-	return t === 1;
+	return progress === 1;
 };
 
 /**
- * Where to look down at squirrel "i" from, keeping the camera's current heading
+ * Where to look down at squirrel "index" from, keeping the camera's current heading
  * so the view doesn't spin on the way.
  */
 export const getSquirrelViewPose = (
 	herd: Herd,
-	i: number,
+	index: number,
 	camera: THREE.Camera,
 	tiles: THREE.Object3D,
 	cameraRadius: number,
 ): Pose => {
 	// Its real-size middle - from afar it's drawn much bigger than it is.
-	const target = new THREE.Vector3().fromArray(herd.positions, i * 3);
+	const target = new THREE.Vector3().fromArray(herd.positions, index * 3);
 	target.y += SQUIRREL_LENGTH_METERS * herd.model.height * 0.5;
 
 	const heading = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).setY(0);

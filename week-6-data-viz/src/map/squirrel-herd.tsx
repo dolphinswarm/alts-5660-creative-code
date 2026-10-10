@@ -50,13 +50,13 @@ const MARKER_FRAGMENT_SHADER = /* glsl */ `
 
 	void main() {
 		// Device pixels in from the ring's outer edge.
-		float d = (1.0 - length(gl_PointCoord - 0.5) * 2.0) * 0.5 * vSize;
+		float inset = (1.0 - length(gl_PointCoord - 0.5) * 2.0) * 0.5 * vSize;
 		float width = 4.0 * pixelRatio;
-		if (d < 0.0 || d > width) discard;
+		if (inset < 0.0 || inset > width) discard;
 		// A fur-colored band between thin outlines - light ones for dark fur.
 		vec3 outline = dot(vColor, vec3(0.299, 0.587, 0.114)) < 0.1 ? vec3(1.0) : vec3(0.0);
-		float band = step(pixelRatio, d) * step(d, width - pixelRatio);
-		gl_FragColor = vec4(mix(outline, vColor, band), vAlpha * clamp(d, 0.0, 1.0) * clamp(width - d, 0.0, 1.0));
+		float band = step(pixelRatio, inset) * step(inset, width - pixelRatio);
+		gl_FragColor = vec4(mix(outline, vColor, band), vAlpha * clamp(inset, 0.0, 1.0) * clamp(width - inset, 0.0, 1.0));
 		#include <colorspace_fragment>
 	}
 `;
@@ -116,13 +116,13 @@ export const SquirrelHerd = ({ herd, tiles }: SquirrelHerdProps) => {
 	// One stable ref per part, so re-renders don't detach and reattach them.
 	const partRefs = React.useMemo(() => herd.model.parts.map((part) => shareInstances(herd, part.tint)), [herd]);
 
-	useFrame(({ camera, gl }) => {
+	useFrame(({ camera, gl: renderer }) => {
 		if (tiles.current) {
 			snapSomeSquirrelsToGround(herd, tiles.current.group);
 		}
 		updateHerdInstances(herd, camera);
-		markerUniforms.pixelRatio.value = gl.getPixelRatio();
-		markerUniforms.viewportHeight.value = gl.domElement.height;
+		markerUniforms.pixelRatio.value = renderer.getPixelRatio();
+		markerUniforms.viewportHeight.value = renderer.domElement.height;
 		if (group.current) {
 			group.current.visible = herd.placed;
 		}
@@ -131,10 +131,10 @@ export const SquirrelHerd = ({ herd, tiles }: SquirrelHerdProps) => {
 	// dispose={null} since the model's geometry and materials outlive this component.
 	return (
 		<group ref={group}>
-			{herd.model.parts.map((part, k) => (
-				<React.Fragment key={k}>
+			{herd.model.parts.map((part, partIndex) => (
+				<React.Fragment key={partIndex}>
 					<instancedMesh
-						ref={partRefs[k]}
+						ref={partRefs[partIndex]}
 						args={[part.geometry, part.material, herd.count]}
 						frustumCulled={false}
 						raycast={noRaycast}
@@ -143,7 +143,7 @@ export const SquirrelHerd = ({ herd, tiles }: SquirrelHerdProps) => {
 					/>
 					{part.tint ? (
 						<instancedMesh
-							ref={partRefs[k]}
+							ref={partRefs[partIndex]}
 							args={[part.geometry, xrayMaterial, herd.count]}
 							frustumCulled={false}
 							raycast={noRaycast}
