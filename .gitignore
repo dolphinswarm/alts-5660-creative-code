@@ -142,6 +142,9 @@ dist
 # Uncompressed source recordings
 **/Assets/originals/
 
-# Ableton Live autosaves
+# Ableton Live and TouchDesigner backups
 **/Backup/
 Desktop.ini
+
+# TouchDesigner incremental saves
+*.[0-9]*.toe
