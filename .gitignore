@@ -138,3 +138,10 @@ dist
 # JUCE / Projucer generated files (regenerate with "Save and Open in IDE")
 **/Builds/
 **/JuceLibraryCode/
+
+# Uncompressed source recordings
+**/Assets/originals/
+
+# Ableton Live autosaves
+**/Backup/
+Desktop.ini

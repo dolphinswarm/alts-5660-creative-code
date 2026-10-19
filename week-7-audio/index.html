@@ -51,20 +51,6 @@
 				border-radius: var(--radius);
 			}
 
-			/* Stand-in until the videos are added */
-			.placeholder {
-				display: grid;
-				place-items: center;
-				width: 100%;
-				height: 100%;
-				aspect-ratio: 16 / 9;
-				box-sizing: border-box;
-				color: color-mix(in srgb, var(--text) 55%, transparent);
-				background: black;
-				border: 1px dashed color-mix(in srgb, var(--accent) 50%, transparent);
-				border-radius: var(--radius);
-			}
-
 			.walkthrough {
 				margin-top: 1rem;
 				text-align: center;
@@ -96,14 +82,22 @@
 			</header>
 
 			<main>
-				<!-- TODO: replace with the demo video -->
-				<div class="placeholder">Demo video coming soon</div>
+				<video
+					src="Assets/demo.mp4"
+					controls
+					preload="metadata"
+					playsinline
+				></video>
 			</main>
 
 			<section id="walkthrough" class="walkthrough">
 				<h2>Video Walkthrough</h2>
-				<!-- TODO: replace with the walkthrough video -->
-				<div class="placeholder">Walkthrough coming soon</div>
+				<video
+					src="Assets/walkthrough.mp4"
+					controls
+					preload="metadata"
+					playsinline
+				></video>
 			</section>
 		</section>
 	</body>
