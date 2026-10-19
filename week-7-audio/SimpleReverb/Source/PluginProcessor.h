@@ -61,6 +61,7 @@ private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     juce::dsp::Reverb reverb;
+    juce::dsp::DryWetMixer<float> mixer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleReverbAudioProcessor)
 };

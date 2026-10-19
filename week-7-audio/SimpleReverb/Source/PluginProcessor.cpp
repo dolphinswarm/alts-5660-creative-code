@@ -34,9 +34,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleReverbAudioProcessor::
     return {
         std::make_unique<Param> (juce::ParameterID { "room", 1 },  "Room Size", 0.0f, 1.0f, 0.5f),
         std::make_unique<Param> (juce::ParameterID { "damp", 1 },  "Damping",   0.0f, 1.0f, 0.5f),
-        std::make_unique<Param> (juce::ParameterID { "wet", 1 },   "Wet",       0.0f, 1.0f, 0.33f),
-        std::make_unique<Param> (juce::ParameterID { "dry", 1 },   "Dry",       0.0f, 1.0f, 0.7f),
-        std::make_unique<Param> (juce::ParameterID { "width", 1 }, "Width",    0.0f, 1.0f, 1.0f)
+        std::make_unique<Param> (juce::ParameterID { "mix", 1 },   "Mix",       0.0f, 1.0f, 0.3f),
+        std::make_unique<Param> (juce::ParameterID { "width", 1 }, "Width",     0.0f, 1.0f, 1.0f)
     };
 }
 
@@ -109,15 +108,22 @@ void SimpleReverbAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void SimpleReverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    reverb.prepare ({ sampleRate,
-                      (juce::uint32) samplesPerBlock,
-                      (juce::uint32) getTotalNumOutputChannels() });
+    juce::dsp::ProcessSpec spec { sampleRate,
+                                  (juce::uint32) samplesPerBlock,
+                                  (juce::uint32) getTotalNumOutputChannels() };
+
+    reverb.prepare (spec);
     reverb.reset();
+
+    mixer.prepare (spec);
+    mixer.setMixingRule (juce::dsp::DryWetMixingRule::sin3dB); // equal-power crossfade
+    mixer.reset();
 }
 
 void SimpleReverbAudioProcessor::releaseResources()
 {
     reverb.reset();
+    mixer.reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -164,13 +170,16 @@ void SimpleReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     juce::Reverb::Parameters params;
     params.roomSize = apvts.getRawParameterValue ("room")->load();
     params.damping  = apvts.getRawParameterValue ("damp")->load();
-    params.wetLevel = apvts.getRawParameterValue ("wet")->load();
-    params.dryLevel = apvts.getRawParameterValue ("dry")->load();
+    params.wetLevel = 1.0f / 3.0f; // juce::Reverb scales wet by 3, so this is unity
+    params.dryLevel = 0.0f;        // the mixer supplies the dry signal
     params.width    = apvts.getRawParameterValue ("width")->load();
     reverb.setParameters (params);
 
     juce::dsp::AudioBlock<float> block (buffer);
+    mixer.pushDrySamples (block);
     reverb.process (juce::dsp::ProcessContextReplacing<float> (block));
+    mixer.setWetMixProportion (apvts.getRawParameterValue ("mix")->load());
+    mixer.mixWetSamples (block);
 }
 
 //==============================================================================
