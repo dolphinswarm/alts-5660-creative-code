@@ -134,3 +134,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# JUCE / Projucer generated files (regenerate with "Save and Open in IDE")
+**/Builds/
+**/JuceLibraryCode/

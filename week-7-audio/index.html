@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 7 - Audio</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎛️</text></svg>"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Major+Mono+Display&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			:root {
+				--bg: radial-gradient(ellipse at top, #241d3d, #0b0a12 70%);
+				--surface: rgba(20, 18, 32, 0.92);
+				--text: #dcd8ec;
+				--accent: #9d8cff;
+				--font-body: "IBM Plex Mono", monospace;
+				--font-display: "Major Mono Display", monospace;
+			}
+
+			.content {
+				box-shadow: 0 0 3rem rgba(157, 140, 255, 0.1);
+			}
+
+			h1 {
+				font-weight: 400;
+				font-size: 2.25rem;
+			}
+
+			h2 {
+				font-weight: 400;
+				font-size: 1.5rem;
+			}
+
+			.content main video,
+			.walkthrough video {
+				display: block;
+				width: 100%;
+				height: 100%;
+				aspect-ratio: 16 / 9;
+				object-fit: contain;
+				background-color: black;
+				border-radius: var(--radius);
+			}
+
+			/* Stand-in until the videos are added */
+			.placeholder {
+				display: grid;
+				place-items: center;
+				width: 100%;
+				height: 100%;
+				aspect-ratio: 16 / 9;
+				box-sizing: border-box;
+				color: color-mix(in srgb, var(--text) 55%, transparent);
+				background: black;
+				border: 1px dashed color-mix(in srgb, var(--accent) 50%, transparent);
+				border-radius: var(--radius);
+			}
+
+			.walkthrough {
+				margin-top: 1rem;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>🎛️ Week 7: Audio 🔊</h1>
+				<p>
+					Simple Reverb, a stereo reverb plugin built in C++ with
+					<a href="https://juce.com/" target="_blank" rel="noopener">JUCE</a>.
+				</p>
+				<p>
+					<a href="SimpleReverb.vst3.zip" download
+						>Download VST3 plugin (Windows x64, .zip)</a
+					>
+					&middot;
+					<a
+						href="https://github.com/dolphinswarm/alts-5660-creative-code/tree/main/week-7-audio"
+						target="_blank"
+						rel="noopener"
+						>View source on GitHub</a
+					>
+				</p>
+			</header>
+
+			<main>
+				<!-- TODO: replace with the demo video -->
+				<div class="placeholder">Demo video coming soon</div>
+			</main>
+
+			<section id="walkthrough" class="walkthrough">
+				<h2>Video Walkthrough</h2>
+				<!-- TODO: replace with the walkthrough video -->
+				<div class="placeholder">Walkthrough coming soon</div>
+			</section>
+		</section>
+	</body>
+</html>

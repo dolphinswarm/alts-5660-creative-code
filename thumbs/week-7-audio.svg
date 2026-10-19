@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+	<defs>
+		<radialGradient id="bg" cx="50%" cy="0%" r="100%">
+			<stop offset="0" stop-color="#241d3d" />
+			<stop offset="0.7" stop-color="#0b0a12" />
+		</radialGradient>
+	</defs>
+	<rect width="640" height="360" fill="url(#bg)" />
+	<!-- A dry hit followed by a decaying reverb tail -->
+	<g stroke="#9d8cff" stroke-linecap="round" stroke-width="6">
+		<line x1="80" y1="70" x2="80" y2="290" />
+		<line x1="120" y1="110" x2="120" y2="250" opacity="0.9" />
+		<line x1="160" y1="128" x2="160" y2="232" opacity="0.82" />
+		<line x1="200" y1="140" x2="200" y2="220" opacity="0.74" />
+		<line x1="240" y1="148" x2="240" y2="212" opacity="0.66" />
+		<line x1="280" y1="154" x2="280" y2="206" opacity="0.58" />
+		<line x1="320" y1="159" x2="320" y2="201" opacity="0.5" />
+		<line x1="360" y1="163" x2="360" y2="197" opacity="0.43" />
+		<line x1="400" y1="166" x2="400" y2="194" opacity="0.36" />
+		<line x1="440" y1="169" x2="440" y2="191" opacity="0.3" />
+		<line x1="480" y1="171" x2="480" y2="189" opacity="0.24" />
+		<line x1="520" y1="173" x2="520" y2="187" opacity="0.18" />
+		<line x1="560" y1="175" x2="560" y2="185" opacity="0.12" />
+	</g>
+</svg>
