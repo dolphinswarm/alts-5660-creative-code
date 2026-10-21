@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 8 - 3D</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥽</text></svg>"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500&family=Orbitron:wght@500&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			:root {
+				--bg: radial-gradient(ellipse at top, #12304a, #070b12 70%);
+				--surface: rgba(12, 22, 34, 0.92);
+				--text: #d6e6f2;
+				--accent: #4fc3f7;
+				--font-body: "Exo 2", sans-serif;
+				--font-display: "Orbitron", sans-serif;
+			}
+
+			.content {
+				box-shadow: 0 0 3rem rgba(79, 195, 247, 0.1);
+			}
+
+			h1 {
+				font-weight: 500;
+				font-size: 2rem;
+			}
+
+			h2 {
+				font-weight: 500;
+				font-size: 1.35rem;
+			}
+
+			.content main video,
+			.walkthrough video {
+				display: block;
+				width: 100%;
+				height: 100%;
+				aspect-ratio: 16 / 9;
+				object-fit: contain;
+				background-color: black;
+				border-radius: var(--radius);
+			}
+
+			.walkthrough {
+				margin-top: 1rem;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>🥽 Week 8: 3D 🧊</h1>
+				<p>
+					A VR scene built in
+					<a href="https://godotengine.org/" target="_blank" rel="noopener">Godot</a>
+					with
+					<a href="https://github.com/GodotVR/godot-xr-tools" target="_blank" rel="noopener"
+						>Godot XR Tools</a
+					>.
+				</p>
+				<p>
+					<a
+						href="https://github.com/dolphinswarm/alts-5660-creative-code/tree/main/week-8-3d"
+						target="_blank"
+						rel="noopener"
+						>View source on GitHub</a
+					>
+				</p>
+			</header>
+
+			<main>
+				<video
+					src="videos/demo.mp4"
+					controls
+					preload="metadata"
+					playsinline
+				></video>
+			</main>
+
+			<section id="walkthrough" class="walkthrough">
+				<h2>Video Walkthrough</h2>
+				<video
+					src="videos/walkthrough.mp4"
+					controls
+					preload="metadata"
+					playsinline
+				></video>
+			</section>
+		</section>
+	</body>
+</html>

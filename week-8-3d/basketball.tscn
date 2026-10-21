@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://dmxuqh84dvkg5"]
+
+[ext_resource type="Script" uid="uid://bfrlpbsqg5lqr" path="res://addons/godot-xr-tools/objects/pickable.gd" id="1_hvw6b"]
+[ext_resource type="Material" uid="uid://nia010cjcdog" path="res://Models/basketball_material.tres" id="2_8nfq6"]
+[ext_resource type="ArrayMesh" uid="uid://bc7dcurd32o7k" path="res://Models/basketball.obj" id="3_g73cu"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8nfq6"]
+friction = 0.8
+bounce = 0.7
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ntbiu"]
+radius = 0.12542316
+
+[node name="Basketball" type="RigidBody3D" unique_id=1754451150]
+collision_layer = 4
+collision_mask = 196615
+mass = 0.6
+physics_material_override = SubResource("PhysicsMaterial_8nfq6")
+freeze_mode = 1
+script = ExtResource("1_hvw6b")
+
+[node name="Model" type="MeshInstance3D" parent="." unique_id=1260459122]
+material_override = ExtResource("2_8nfq6")
+mesh = ExtResource("3_g73cu")
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=1818126254]
+shape = SubResource("SphereShape3D_ntbiu")

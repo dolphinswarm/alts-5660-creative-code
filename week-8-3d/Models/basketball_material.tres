@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://nia010cjcdog"]
+
+[ext_resource type="Texture2D" uid="uid://b4t3d7tnj7q8m" path="res://Models/texture_diffuse.png" id="1_b367m"]
+[ext_resource type="Texture2D" uid="uid://brx532u7twoaj" path="res://Models/texture_normal.png" id="2_rex3j"]
+[ext_resource type="Texture2D" uid="uid://but8v3781v82y" path="res://Models/texture_roughness.png" id="3_u3t3l"]
+
+[resource]
+albedo_texture = ExtResource("1_b367m")
+roughness_texture = ExtResource("3_u3t3l")
+normal_enabled = true
+normal_texture = ExtResource("2_rex3j")

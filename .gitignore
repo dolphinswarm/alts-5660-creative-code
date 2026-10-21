@@ -141,6 +141,7 @@ dist
 
 # Uncompressed source recordings
 **/Assets/originals/
+**/videos/originals/
 
 # Ableton Live and TouchDesigner backups
 **/Backup/
@@ -148,3 +149,7 @@ Desktop.ini
 
 # TouchDesigner incremental saves
 *.[0-9]*.toe
+
+# TouchDesigner import cache and device SDK logs
+**/TDImportCache/
+**/Log/
