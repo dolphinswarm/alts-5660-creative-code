@@ -31,6 +31,10 @@ size = Vector3(7.536072, 1, 18.073242)
 [sub_resource type="BoxShape3D" id="BoxShape3D_sf62x"]
 size = Vector3(1.2095032, 0.86865234, 0.057006836)
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_net01"]
+height = 0.1
+radius = 0.08
+
 [node name="Main" type="Node3D" unique_id=1116799000]
 script = ExtResource("1_h2yge")
 
@@ -55,6 +59,10 @@ environment = SubResource("Environment_6ivru")
 
 [node name="Court" parent="." unique_id=1056948516 instance=ExtResource("5_lquwl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03353855, 0.0027718544, 2.5474973)
+
+[node name="StaticBody3D" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_40/Object_127" parent_id_path=PackedInt32Array(1056948516, 1885112566) index="0" unique_id=126890414 groups=["rim"]]
+
+[node name="StaticBody3D" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_001_44/Object_137" parent_id_path=PackedInt32Array(1056948516, 31392427) index="0" unique_id=1290292083 groups=["rim"]]
 
 [node name="Pedestal" type="CSGBox3D" parent="." unique_id=395352354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9518311, 0.55046225, -0.013108969)
@@ -102,6 +110,22 @@ shape = SubResource("BoxShape3D_grxsg")
 transform = Transform3D(-0.95105654, 0.309017, -1.509958e-07, 0.309017, 0.95105654, 0, 1.4360555e-07, -4.666027e-08, -1, -8.954179, 0.7602022, 0.057128906)
 shape = SubResource("BoxShape3D_grxsg")
 
-[node name="Backboard" type="CollisionShape3D" parent="CourtCollision" unique_id=2067515632]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.008926392, 2.985789, -6.525858)
+[node name="Backboard" type="StaticBody3D" parent="." unique_id=2067515632 groups=["backboard"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.024612159, 2.988561, -3.9783607)
+
+[node name="Collision" type="CollisionShape3D" parent="Backboard" unique_id=1630258814]
 shape = SubResource("BoxShape3D_sf62x")
+
+[node name="Hoop" type="Node3D" parent="." unique_id=871046325]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03353855, 2.7318, -3.5590026)
+
+[node name="Net" type="Area3D" parent="Hoop" unique_id=1277409358 groups=["net"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+collision_layer = 512
+collision_mask = 0
+monitoring = false
+
+[node name="Collision" type="CollisionShape3D" parent="Hoop/Net" unique_id=1029384756]
+shape = SubResource("CylinderShape3D_net01")
+
+[editable path="Court"]
