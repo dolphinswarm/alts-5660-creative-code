@@ -10,7 +10,7 @@
 [ext_resource type="AudioStream" uid="uid://ddyxop3n3oo2m" path="res://Audio/dribble4.mp3" id="8_ussci"]
 [ext_resource type="AudioStream" uid="uid://dukbktbxcdc4" path="res://Audio/backboard.mp3" id="9_me8a1"]
 [ext_resource type="AudioStream" uid="uid://bx417n4byfvoo" path="res://Audio/rim.mp3" id="10_rim01"]
-[ext_resource type="AudioStream" uid="uid://d3dy6wkry2rec" path="res://Audio/net.mp3" id="11_net01"]
+[ext_resource type="Script" path="res://Scripts/BallDespawn.cs" id="11_desp1"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8nfq6"]
 friction = 0.8
@@ -27,13 +27,14 @@ stream_1/stream = ExtResource("6_me8a1")
 stream_2/stream = ExtResource("7_61oux")
 stream_3/stream = ExtResource("8_ussci")
 
-[node name="Basketball" type="RigidBody3D" unique_id=1754451150]
+[node name="Basketball" type="RigidBody3D" unique_id=1754451150 groups=["ball"]]
 collision_layer = 4
 collision_mask = 196615
 mass = 0.6
 physics_material_override = SubResource("PhysicsMaterial_8nfq6")
 freeze_mode = 1
 script = ExtResource("1_hvw6b")
+release_mode = 0
 
 [node name="Model" type="MeshInstance3D" parent="." unique_id=1260459122]
 material_override = ExtResource("2_8nfq6")
@@ -42,18 +43,15 @@ mesh = ExtResource("3_g73cu")
 [node name="Collision" type="CollisionShape3D" parent="." unique_id=1818126254]
 shape = SubResource("SphereShape3D_ntbiu")
 
-[node name="BallAudio" type="Area3D" parent="." unique_id=1447128500 node_paths=PackedStringArray("Player")]
-collision_layer = 0
-collision_mask = 512
-monitorable = false
+[node name="BallAudio" type="Node3D" parent="." unique_id=1447128500 node_paths=PackedStringArray("Player")]
 script = ExtResource("4_8nfq6")
 Player = NodePath("AudioPlayer")
 DribbleSound = SubResource("AudioStreamRandomizer_g73cu")
 BackboardSound = ExtResource("9_me8a1")
 RimSound = ExtResource("10_rim01")
-NetSound = ExtResource("11_net01")
-
-[node name="Collision" type="CollisionShape3D" parent="BallAudio" unique_id=402918377]
-shape = SubResource("SphereShape3D_ntbiu")
 
 [node name="AudioPlayer" type="AudioStreamPlayer3D" parent="BallAudio" unique_id=1535305248]
+
+[node name="BallDespawn" type="Node" parent="." unique_id=1093847562 node_paths=PackedStringArray("Model")]
+script = ExtResource("11_desp1")
+Model = NodePath("../Model")

@@ -8,6 +8,17 @@
 [ext_resource type="PackedScene" uid="uid://bj221n3hbb28g" path="res://Models/indoor_basketball_court.glb" id="5_lquwl"]
 [ext_resource type="Script" uid="uid://dkirsfny8ipai" path="res://Scripts/BallSpawner.cs" id="6_7mycd"]
 [ext_resource type="PackedScene" uid="uid://dmxuqh84dvkg5" path="res://basketball.tscn" id="7_272bh"]
+[ext_resource type="Script" uid="uid://dgwx16kfb8amq" path="res://Scripts/Hoop.cs" id="8_hoop1"]
+[ext_resource type="AudioStream" uid="uid://d3dy6wkry2rec" path="res://Audio/net-1.mp3" id="9_net01"]
+[ext_resource type="Script" path="res://Scripts/GameManager.cs" id="10_game1"]
+[ext_resource type="FontFile" path="res://Fonts/DSEG7Classic-Bold.ttf" id="11_dseg1"]
+[ext_resource type="PackedScene" uid="uid://cme66uldrjl2i" path="res://addons/godot-xr-tools/interactables/interactable_area_button.tscn" id="12_btn01"]
+[ext_resource type="AudioStream" uid="uid://dpvmakp32r76j" path="res://Audio/net-2.wav" id="13_net02"]
+[ext_resource type="AudioStream" uid="uid://dyxkntd8mpfw1" path="res://Audio/buzzer.mp3" id="14_buzz1"]
+[ext_resource type="AudioStream" uid="uid://cs2ic08pysowj" path="res://Audio/button-press.mp3" id="15_click"]
+[ext_resource type="AudioStream" uid="uid://dcq6opawy8rpg" path="res://Audio/clock-tick-1.mp3" id="16_tick1"]
+[ext_resource type="AudioStream" uid="uid://chwmtfdavtcek" path="res://Audio/clock-tick-2.mp3" id="17_tick2"]
+[ext_resource type="AudioStream" uid="uid://bedatat1biujy" path="res://Audio/clock-tick-3.mp3" id="18_tick3"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_w6ruu"]
 panorama = ExtResource("4_1bvp3")
@@ -31,9 +42,82 @@ size = Vector3(7.536072, 1, 18.073242)
 [sub_resource type="BoxShape3D" id="BoxShape3D_sf62x"]
 size = Vector3(1.2095032, 0.86865234, 0.057006836)
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_net01"]
-height = 0.1
-radius = 0.08
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pole1"]
+height = 3.18
+radius = 0.05
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_arml1"]
+size = Vector3(0.15, 0.05, 0.92)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_armu1"]
+size = Vector3(0.15, 0.05, 0.57)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_base1"]
+size = Vector3(1.12, 0.41, 0.39)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hand1"]
+radius = 0.05
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_screen"]
+albedo_color = Color(0.02, 0.02, 0.02, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_btn01"]
+height = 0.03
+radius = 0.05
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_housing"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_housing"]
+material = SubResource("StandardMaterial3D_housing")
+top_radius = 0.06
+bottom_radius = 0.06
+height = 0.02
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cap"]
+albedo_color = Color(0.85, 0.05, 0.05, 1)
+emission_enabled = true
+emission = Color(1, 0.1, 0.1, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cap"]
+material = SubResource("StandardMaterial3D_cap")
+top_radius = 0.045
+bottom_radius = 0.045
+height = 0.03
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_coverl"]
+shading_mode = 0
+albedo_color = Color(0.145, 0.157, 0.176, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_coverl"]
+material = SubResource("StandardMaterial3D_coverl")
+size = Vector2(0.8, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_coverr"]
+shading_mode = 0
+albedo_color = Color(0.118, 0.129, 0.149, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_coverr"]
+material = SubResource("StandardMaterial3D_coverr")
+size = Vector2(0.97, 0.2)
+
+[sub_resource type="SystemFont" id="SystemFont_caption"]
+font_names = PackedStringArray("Impact", "Arial Narrow", "Arial")
+font_weight = 700
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_tick1"]
+streams_count = 3
+stream_0/stream = ExtResource("16_tick1")
+stream_1/stream = ExtResource("17_tick2")
+stream_2/stream = ExtResource("18_tick3")
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_net01"]
+playback_mode = 1
+streams_count = 2
+stream_0/stream = ExtResource("9_net01")
+stream_1/stream = ExtResource("13_net02")
 
 [node name="Main" type="Node3D" unique_id=1116799000]
 script = ExtResource("1_h2yge")
@@ -48,11 +132,29 @@ script = ExtResource("2_5vw27")
 
 [node name="LeftHand" parent="XROrigin3D/LeftHand" unique_id=441859012 instance=ExtResource("2_1bvp3")]
 
+[node name="PokeArea" type="Area3D" parent="XROrigin3D/LeftHand" unique_id=1840263917]
+collision_layer = 131072
+collision_mask = 0
+monitoring = false
+
+[node name="Collision" type="CollisionShape3D" parent="XROrigin3D/LeftHand/PokeArea" unique_id=571936240]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+shape = SubResource("SphereShape3D_hand1")
+
 [node name="RightHand" type="XRController3D" parent="XROrigin3D" unique_id=1230984891]
 tracker = &"right_hand"
 script = ExtResource("2_5vw27")
 
 [node name="RightHand" parent="XROrigin3D/RightHand" unique_id=1503588380 instance=ExtResource("3_lquwl")]
+
+[node name="PokeArea" type="Area3D" parent="XROrigin3D/RightHand" unique_id=96382745]
+collision_layer = 131072
+collision_mask = 0
+monitoring = false
+
+[node name="Collision" type="CollisionShape3D" parent="XROrigin3D/RightHand/PokeArea" unique_id=1462908351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+shape = SubResource("SphereShape3D_hand1")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=593934048]
 environment = SubResource("Environment_6ivru")
@@ -63,6 +165,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03353855, 0.0027718544, 2.5
 [node name="StaticBody3D" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_40/Object_127" parent_id_path=PackedInt32Array(1056948516, 1885112566) index="0" unique_id=126890414 groups=["rim"]]
 
 [node name="StaticBody3D" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_001_44/Object_137" parent_id_path=PackedInt32Array(1056948516, 31392427) index="0" unique_id=1290292083 groups=["rim"]]
+
+[node name="Cube_049_45" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode" parent_id_path=PackedInt32Array(1056948516, 992665690) index="44" unique_id=307615111]
+transform = Transform3D(-4.9393867e-09, -2.5750628e-30, -2.263, -1.6543612e-24, 1.7179998, 0, 0.11299999, 5.293956e-23, -9.891886e-08, -4.274103, 6.804771, -14.523831)
+
+[node name="Object_140" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Cube_049_45" index="1" unique_id=1218221065]
+transform = Transform3D(0.99999994, 0, 0, -8.271806e-25, 0.9999999, 0, 0, 0, 0.99999994, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_screen")
 
 [node name="Pedestal" type="CSGBox3D" parent="." unique_id=395352354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9518311, 0.55046225, -0.013108969)
@@ -116,16 +225,191 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.024612159, 2.988561, -3.978
 [node name="Collision" type="CollisionShape3D" parent="Backboard" unique_id=1630258814]
 shape = SubResource("BoxShape3D_sf62x")
 
-[node name="Hoop" type="Node3D" parent="." unique_id=871046325]
+[node name="HoopFrame" type="StaticBody3D" parent="." unique_id=1736205918 groups=["frame"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.034, 0, -4.5)
+
+[node name="Pole" type="CollisionShape3D" parent="HoopFrame" unique_id=402771563]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.59, 0)
+shape = SubResource("CylinderShape3D_pole1")
+
+[node name="LowerArm" type="CollisionShape3D" parent="HoopFrame" unique_id=1958340127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.61, 0.07)
+shape = SubResource("BoxShape3D_arml1")
+
+[node name="UpperArm" type="CollisionShape3D" parent="HoopFrame" unique_id=883914406]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.985, 0.245)
+shape = SubResource("BoxShape3D_armu1")
+
+[node name="HoopBase" type="StaticBody3D" parent="." unique_id=1310452879]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.034, 0.205, -5.815)
+
+[node name="Collision" type="CollisionShape3D" parent="HoopBase" unique_id=650283914]
+shape = SubResource("BoxShape3D_base1")
+
+[node name="Hoop" type="Node3D" parent="." unique_id=871046325 node_paths=PackedStringArray("NetAudio", "RimMesh", "NetMesh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03353855, 2.7318, -3.5590026)
+script = ExtResource("8_hoop1")
+NetAudio = NodePath("NetAudio")
+RimMesh = NodePath("../Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_40")
+NetMesh = NodePath("../Court/Sketchfab_model/root/GLTF_SceneRootNode/Cylinder_001_39")
 
-[node name="Net" type="Area3D" parent="Hoop" unique_id=1277409358 groups=["net"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
-collision_layer = 512
-collision_mask = 0
-monitoring = false
+[node name="NetAudio" type="AudioStreamPlayer3D" parent="Hoop" unique_id=745102368]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+stream = SubResource("AudioStreamRandomizer_net01")
+max_polyphony = 2
 
-[node name="Collision" type="CollisionShape3D" parent="Hoop/Net" unique_id=1029384756]
-shape = SubResource("CylinderShape3D_net01")
+[node name="StartButton" parent="." unique_id=1129384756 instance=ExtResource("12_btn01")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9518311, 1, -0.195)
+button = NodePath("Cap")
+displacement = Vector3(0, -0.015, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="StartButton" unique_id=1650394827]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+shape = SubResource("CylinderShape3D_btn01")
+
+[node name="Housing" type="MeshInstance3D" parent="StartButton" unique_id=1374029516]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+mesh = SubResource("CylinderMesh_housing")
+
+[node name="Cap" type="MeshInstance3D" parent="StartButton" unique_id=286610493]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0)
+mesh = SubResource("CylinderMesh_cap")
+
+[node name="StartLabel" type="Label3D" parent="StartButton" unique_id=1940387561]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.202, -0.12, 0.182)
+pixel_size = 0.002
+modulate = Color(1, 0.15, 0.1, 1)
+text = "START"
+font_size = 48
+
+[node name="StartHint" type="Label3D" parent="StartButton" unique_id=1572839406]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.202, -0.2, 0.182)
+pixel_size = 0.0015
+text = "Push the red button on top to start.
+
+Make as many shots as you can before the buzzer. Every basket is worth 3."
+font_size = 24
+outline_size = 8
+vertical_alignment = 0
+autowrap_mode = 3
+width = 240.0
+
+[node name="ClickSound" type="AudioStreamPlayer3D" parent="StartButton" unique_id=809364172]
+stream = ExtResource("15_click")
+
+[node name="Scoreboard" type="Node3D" parent="." unique_id=1508237461]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4257, 3.9549, -5.75)
+
+[node name="StatusLabel" type="Label3D" parent="Scoreboard" unique_id=1038475629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3, 0)
+pixel_size = 0.0035
+alpha_cut = 2
+text = "PRESS START"
+font_size = 110
+outline_size = 24
+
+[node name="ScoreGhost" type="Label3D" parent="Scoreboard" unique_id=1283746501]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.866, 0.097, -0.003)
+pixel_size = 0.0013
+modulate = Color(0.22, 0.03, 0.02, 1)
+alpha_cut = 2
+text = "88"
+font = ExtResource("11_dseg1")
+font_size = 256
+outline_size = 0
+
+[node name="ScoreLabel" type="Label3D" parent="Scoreboard" unique_id=1928374650]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.866, 0.097, 0)
+pixel_size = 0.0013
+modulate = Color(1, 0.12, 0.08, 1)
+alpha_cut = 2
+text = "!0"
+font = ExtResource("11_dseg1")
+font_size = 256
+outline_size = 0
+
+[node name="BestGhost" type="Label3D" parent="Scoreboard" unique_id=1102938475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.861, 0.097, -0.003)
+pixel_size = 0.0013
+modulate = Color(0.03, 0.18, 0.04, 1)
+alpha_cut = 2
+text = "88"
+font = ExtResource("11_dseg1")
+font_size = 256
+outline_size = 0
+
+[node name="BestLabel" type="Label3D" parent="Scoreboard" unique_id=384756102]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.861, 0.097, 0)
+pixel_size = 0.0013
+modulate = Color(0.2, 1, 0.25, 1)
+alpha_cut = 2
+text = "!0"
+font = ExtResource("11_dseg1")
+font_size = 256
+outline_size = 0
+
+[node name="ClockGhost" type="Label3D" parent="Scoreboard" unique_id=1675849302]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.684, -0.003)
+pixel_size = 0.0015
+modulate = Color(0.2, 0.17, 0.02, 1)
+alpha_cut = 2
+text = "8:88"
+font = ExtResource("11_dseg1")
+font_size = 256
+outline_size = 0
+
+[node name="ClockLabel" type="Label3D" parent="Scoreboard" unique_id=203948576]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.684, 0)
+pixel_size = 0.0015
+modulate = Color(1, 0.85, 0.1, 1)
+alpha_cut = 2
+text = "1:00"
+font = ExtResource("11_dseg1")
+font_size = 256
+outline_size = 0
+
+[node name="ScoreCover" type="MeshInstance3D" parent="Scoreboard" unique_id=1460293817]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, -0.25, -0.003)
+mesh = SubResource("QuadMesh_coverl")
+
+[node name="ScoreCaption" type="Label3D" parent="Scoreboard" unique_id=1920384756]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.866, -0.25, 0)
+pixel_size = 0.0015
+alpha_cut = 2
+text = "SCORE"
+font = SubResource("SystemFont_caption")
+font_size = 120
+outline_size = 0
+
+[node name="BestCover" type="MeshInstance3D" parent="Scoreboard" unique_id=375610928]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.785, -0.25, -0.003)
+mesh = SubResource("QuadMesh_coverr")
+
+[node name="BestCaption" type="Label3D" parent="Scoreboard" unique_id=1648203957]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, -0.25, 0)
+pixel_size = 0.0015
+alpha_cut = 2
+text = "HIGH SCORE"
+font = SubResource("SystemFont_caption")
+font_size = 120
+outline_size = 0
+
+[node name="TickSound" type="AudioStreamPlayer3D" parent="Scoreboard" unique_id=1203948571]
+stream = SubResource("AudioStreamRandomizer_tick1")
+
+[node name="Buzzer" type="AudioStreamPlayer3D" parent="Scoreboard" unique_id=1739204856]
+stream = ExtResource("14_buzz1")
+
+[node name="GameManager" type="Node" parent="." unique_id=1847362910 node_paths=PackedStringArray("Hoop", "StartButton", "StatusLabel", "ClockLabel", "ScoreLabel", "BestLabel", "Buzzer", "TickSound", "ButtonSound")]
+script = ExtResource("10_game1")
+Hoop = NodePath("../Hoop")
+StartButton = NodePath("../StartButton")
+StatusLabel = NodePath("../Scoreboard/StatusLabel")
+ClockLabel = NodePath("../Scoreboard/ClockLabel")
+ScoreLabel = NodePath("../Scoreboard/ScoreLabel")
+BestLabel = NodePath("../Scoreboard/BestLabel")
+Buzzer = NodePath("../Scoreboard/Buzzer")
+TickSound = NodePath("../Scoreboard/TickSound")
+ButtonSound = NodePath("../StartButton/ClickSound")
 
 [editable path="Court"]
