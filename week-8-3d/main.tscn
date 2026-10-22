@@ -10,8 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://dmxuqh84dvkg5" path="res://basketball.tscn" id="7_272bh"]
 [ext_resource type="Script" uid="uid://dgwx16kfb8amq" path="res://Scripts/Hoop.cs" id="8_hoop1"]
 [ext_resource type="AudioStream" uid="uid://d3dy6wkry2rec" path="res://Audio/net-1.mp3" id="9_net01"]
-[ext_resource type="Script" path="res://Scripts/GameManager.cs" id="10_game1"]
-[ext_resource type="FontFile" path="res://Fonts/DSEG7Classic-Bold.ttf" id="11_dseg1"]
+[ext_resource type="Script" uid="uid://dmy7cru6iie36" path="res://Scripts/GameManager.cs" id="10_game1"]
+[ext_resource type="FontFile" uid="uid://d1gi75cgksc7u" path="res://Fonts/DSEG7Classic-Bold.ttf" id="11_dseg1"]
 [ext_resource type="PackedScene" uid="uid://cme66uldrjl2i" path="res://addons/godot-xr-tools/interactables/interactable_area_button.tscn" id="12_btn01"]
 [ext_resource type="AudioStream" uid="uid://dpvmakp32r76j" path="res://Audio/net-2.wav" id="13_net02"]
 [ext_resource type="AudioStream" uid="uid://dyxkntd8mpfw1" path="res://Audio/buzzer.mp3" id="14_buzz1"]
@@ -19,7 +19,10 @@
 [ext_resource type="AudioStream" uid="uid://dcq6opawy8rpg" path="res://Audio/clock-tick-1.mp3" id="16_tick1"]
 [ext_resource type="AudioStream" uid="uid://chwmtfdavtcek" path="res://Audio/clock-tick-2.mp3" id="17_tick2"]
 [ext_resource type="AudioStream" uid="uid://bedatat1biujy" path="res://Audio/clock-tick-3.mp3" id="18_tick3"]
-[ext_resource type="Script" path="res://Scripts/ControllerHaptics.cs" id="19_haptc"]
+[ext_resource type="Script" uid="uid://b037d112k2jab" path="res://Scripts/ControllerHaptics.cs" id="19_haptc"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hand1"]
+radius = 0.05
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_w6ruu"]
 panorama = ExtResource("4_1bvp3")
@@ -35,6 +38,10 @@ ambient_light_color = Color(0.85, 0.83, 0.8, 1)
 ambient_light_energy = 0.5
 reflected_light_source = 1
 tonemap_mode = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_screen"]
+albedo_color = Color(0.02, 0.02, 0.02, 1)
+roughness = 0.8
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ntbiu"]
 size = Vector3(10.753357, 0.26611328, 18.584229)
@@ -64,12 +71,11 @@ size = Vector3(0.15, 0.05, 0.57)
 [sub_resource type="BoxShape3D" id="BoxShape3D_base1"]
 size = Vector3(1.12, 0.41, 0.39)
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_hand1"]
-radius = 0.05
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_screen"]
-albedo_color = Color(0.02, 0.02, 0.02, 1)
-roughness = 0.8
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_net01"]
+playback_mode = 1
+streams_count = 2
+stream_0/stream = ExtResource("9_net01")
+stream_1/stream = ExtResource("13_net02")
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_btn01"]
 height = 0.03
@@ -104,6 +110,10 @@ albedo_color = Color(0.145, 0.157, 0.176, 1)
 material = SubResource("StandardMaterial3D_coverl")
 size = Vector2(0.8, 0.2)
 
+[sub_resource type="SystemFont" id="SystemFont_caption"]
+font_names = PackedStringArray("Impact", "Arial Narrow", "Arial")
+font_weight = 700
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_coverr"]
 shading_mode = 0
 albedo_color = Color(0.118, 0.129, 0.149, 1)
@@ -112,21 +122,11 @@ albedo_color = Color(0.118, 0.129, 0.149, 1)
 material = SubResource("StandardMaterial3D_coverr")
 size = Vector2(0.97, 0.2)
 
-[sub_resource type="SystemFont" id="SystemFont_caption"]
-font_names = PackedStringArray("Impact", "Arial Narrow", "Arial")
-font_weight = 700
-
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_tick1"]
 streams_count = 3
 stream_0/stream = ExtResource("16_tick1")
 stream_1/stream = ExtResource("17_tick2")
 stream_2/stream = ExtResource("18_tick3")
-
-[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_net01"]
-playback_mode = 1
-streams_count = 2
-stream_0/stream = ExtResource("9_net01")
-stream_1/stream = ExtResource("13_net02")
 
 [node name="Main" type="Node3D" unique_id=1116799000]
 script = ExtResource("1_h2yge")
@@ -349,8 +349,8 @@ outline_size = 24
 [node name="ScoreGhost" type="Label3D" parent="Scoreboard" unique_id=1283746501]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.866, 0.097, -0.003)
 pixel_size = 0.0013
-modulate = Color(0.22, 0.03, 0.02, 1)
 alpha_cut = 2
+modulate = Color(0.22, 0.03, 0.02, 1)
 text = "88"
 font = ExtResource("11_dseg1")
 font_size = 256
@@ -359,8 +359,8 @@ outline_size = 0
 [node name="ScoreLabel" type="Label3D" parent="Scoreboard" unique_id=1928374650]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.866, 0.097, 0)
 pixel_size = 0.0013
-modulate = Color(1, 0.12, 0.08, 1)
 alpha_cut = 2
+modulate = Color(1, 0.12, 0.08, 1)
 text = "!0"
 font = ExtResource("11_dseg1")
 font_size = 256
@@ -369,8 +369,8 @@ outline_size = 0
 [node name="BestGhost" type="Label3D" parent="Scoreboard" unique_id=1102938475]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.861, 0.097, -0.003)
 pixel_size = 0.0013
-modulate = Color(0.03, 0.18, 0.04, 1)
 alpha_cut = 2
+modulate = Color(0.03, 0.18, 0.04, 1)
 text = "88"
 font = ExtResource("11_dseg1")
 font_size = 256
@@ -379,8 +379,8 @@ outline_size = 0
 [node name="BestLabel" type="Label3D" parent="Scoreboard" unique_id=384756102]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.861, 0.097, 0)
 pixel_size = 0.0013
-modulate = Color(0.2, 1, 0.25, 1)
 alpha_cut = 2
+modulate = Color(0.2, 1, 0.25, 1)
 text = "!0"
 font = ExtResource("11_dseg1")
 font_size = 256
@@ -389,8 +389,8 @@ outline_size = 0
 [node name="ClockGhost" type="Label3D" parent="Scoreboard" unique_id=1675849302]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.684, -0.003)
 pixel_size = 0.0015
-modulate = Color(0.2, 0.17, 0.02, 1)
 alpha_cut = 2
+modulate = Color(0.2, 0.17, 0.02, 1)
 text = "8:88"
 font = ExtResource("11_dseg1")
 font_size = 256
@@ -399,8 +399,8 @@ outline_size = 0
 [node name="ClockLabel" type="Label3D" parent="Scoreboard" unique_id=203948576]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.684, 0)
 pixel_size = 0.0015
-modulate = Color(1, 0.85, 0.1, 1)
 alpha_cut = 2
+modulate = Color(1, 0.85, 0.1, 1)
 text = "1:00"
 font = ExtResource("11_dseg1")
 font_size = 256
