@@ -29,6 +29,11 @@ sky_material = SubResource("PanoramaSkyMaterial_w6ruu")
 [sub_resource type="Environment" id="Environment_6ivru"]
 background_mode = 2
 sky = SubResource("Sky_8d6ww")
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.83, 0.8, 1)
+ambient_light_energy = 0.5
+reflected_light_source = 1
+tonemap_mode = 4
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ntbiu"]
 size = Vector3(10.753357, 0.26611328, 18.584229)
@@ -162,7 +167,25 @@ environment = SubResource("Environment_6ivru")
 [node name="Court" parent="." unique_id=1056948516 instance=ExtResource("5_lquwl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03353855, 0.0027718544, 2.5474973)
 
-[node name="StaticBody3D" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_40/Object_127" parent_id_path=PackedInt32Array(1056948516, 1885112566) index="0" unique_id=126890414 groups=["rim"]]
+[node name="Object_119" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Cube_37" parent_id_path=PackedInt32Array(1056948516, 1250825559) index="0" unique_id=440854032]
+layers = 3
+
+[node name="Object_120" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Cube_37" parent_id_path=PackedInt32Array(1056948516, 1250825559) index="1" unique_id=477395383]
+layers = 3
+
+[node name="Object_122" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Cylinder_38" parent_id_path=PackedInt32Array(1056948516, 218318425) index="0" unique_id=1687207389]
+layers = 3
+
+[node name="Object_123" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Cylinder_38" parent_id_path=PackedInt32Array(1056948516, 218318425) index="1" unique_id=585772321]
+layers = 3
+
+[node name="Object_125" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Cylinder_001_39" parent_id_path=PackedInt32Array(1056948516, 714476856) index="0" unique_id=1901328643]
+layers = 3
+
+[node name="Object_127" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_40" parent_id_path=PackedInt32Array(1056948516, 490111203) index="0" unique_id=1885112566]
+layers = 3
+
+[node name="StaticBody3D" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_40/Object_127" index="0" unique_id=126890414 groups=["rim"]]
 
 [node name="StaticBody3D" parent="Court/Sketchfab_model/root/GLTF_SceneRootNode/Torus_001_44/Object_137" parent_id_path=PackedInt32Array(1056948516, 31392427) index="0" unique_id=1290292083 groups=["rim"]]
 
@@ -175,6 +198,7 @@ material_override = SubResource("StandardMaterial3D_screen")
 
 [node name="Pedestal" type="CSGBox3D" parent="." unique_id=395352354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9518311, 0.55046225, -0.013108969)
+layers = 3
 use_collision = true
 size = Vector3(0.4, 0.9, 0.5)
 
@@ -269,10 +293,12 @@ shape = SubResource("CylinderShape3D_btn01")
 
 [node name="Housing" type="MeshInstance3D" parent="StartButton" unique_id=1374029516]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+layers = 3
 mesh = SubResource("CylinderMesh_housing")
 
 [node name="Cap" type="MeshInstance3D" parent="StartButton" unique_id=286610493]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0)
+layers = 3
 mesh = SubResource("CylinderMesh_cap")
 
 [node name="StartLabel" type="Label3D" parent="StartButton" unique_id=1940387561]
@@ -411,5 +437,17 @@ BestLabel = NodePath("../Scoreboard/BestLabel")
 Buzzer = NodePath("../Scoreboard/Buzzer")
 TickSound = NodePath("../Scoreboard/TickSound")
 ButtonSound = NodePath("../StartButton/ClickSound")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1846698784]
+transform = Transform3D(0.81915206, -0.51983684, 0.24240386, 0, 0.42261824, 0.9063078, -0.57357645, -0.7424039, 0.3461886, 0, 0, 0)
+light_energy = 1.1
+shadow_enabled = true
+shadow_caster_mask = 2
+
+[node name="GymReflections" type="ReflectionProbe" parent="." unique_id=1133394306]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 3.7, 2.55)
+size = Vector3(21.5, 7.4, 18.2)
+origin_offset = Vector3(0, -1.9, -2.55)
+box_projection = true
 
 [editable path="Court"]

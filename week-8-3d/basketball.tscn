@@ -37,6 +37,7 @@ script = ExtResource("1_hvw6b")
 release_mode = 0
 
 [node name="Model" type="MeshInstance3D" parent="." unique_id=1260459122]
+layers = 3
 material_override = ExtResource("2_8nfq6")
 mesh = ExtResource("3_g73cu")
 
