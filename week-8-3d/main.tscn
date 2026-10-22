@@ -39,7 +39,10 @@ tonemap_mode = 4
 size = Vector3(10.753357, 0.26611328, 18.584229)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_54sxe"]
-size = Vector3(22.758667, 8.098633, 0.119140625)
+size = Vector3(22.758667, 9, 0.119140625)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ceil1"]
+size = Vector3(12.368, 0.5, 19.2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_grxsg"]
 size = Vector3(7.536072, 1, 18.073242)
@@ -220,20 +223,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.100738555, -0.025758713, -0
 shape = SubResource("BoxShape3D_ntbiu")
 
 [node name="Wall1" type="CollisionShape3D" parent="CourtCollision" unique_id=1312369050]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.054137975, 3.5493164, -8.993368)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.054137975, 4, -8.993368)
 shape = SubResource("BoxShape3D_54sxe")
 
 [node name="Wall2" type="CollisionShape3D" parent="CourtCollision" unique_id=282836381]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.054137975, 3.5493164, 9.288334)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.054137975, 4, 9.18)
 shape = SubResource("BoxShape3D_54sxe")
 
 [node name="Wall3" type="CollisionShape3D" parent="CourtCollision" unique_id=1348739832]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -10.629857, 3.5493164, -0.74203825)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.27, 4, -0.74203825)
 shape = SubResource("BoxShape3D_54sxe")
 
 [node name="Wall4" type="CollisionShape3D" parent="CourtCollision" unique_id=1224443089]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.304242, 3.5493164, -0.74203825)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.304242, 4, -0.74203825)
 shape = SubResource("BoxShape3D_54sxe")
+
+[node name="CeilingWest" type="CollisionShape3D" parent="CourtCollision" unique_id=1592047361]
+transform = Transform3D(0.9945219, -0.1045285, 0, 0.1045285, 0.9945219, 0, 0, 0, 1, -5.876, 7.224, 0)
+shape = SubResource("BoxShape3D_ceil1")
+
+[node name="CeilingEast" type="CollisionShape3D" parent="CourtCollision" unique_id=738261945]
+transform = Transform3D(0.9945219, 0.1045285, 0, -0.1045285, 0.9945219, 0, 0, 0, 1, 5.876, 7.224, 0)
+shape = SubResource("BoxShape3D_ceil1")
 
 [node name="Bleachers1" type="CollisionShape3D" parent="CourtCollision" unique_id=1571097167]
 transform = Transform3D(0.95105654, -0.309017, 0, 0.309017, 0.95105654, 0, 0, 0, 1, 8.433962, 0.7602022, 0.057128906)
