@@ -6,38 +6,42 @@
 		<title>Week 8 - 3D</title>
 		<link
 			rel="icon"
-			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥽</text></svg>"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>"
 		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500&family=Orbitron:wght@500&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Bebas+Neue&display=swap"
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="../style.css" />
 		<script src="../shared/back-button.js" defer></script>
 		<style>
 			:root {
-				--bg: radial-gradient(ellipse at top, #12304a, #070b12 70%);
-				--surface: rgba(12, 22, 34, 0.92);
-				--text: #d6e6f2;
-				--accent: #4fc3f7;
-				--font-body: "Exo 2", sans-serif;
-				--font-display: "Orbitron", sans-serif;
+				--bg: radial-gradient(ellipse at top, #3d2010, #0e0905 70%);
+				--surface: rgba(28, 18, 11, 0.92);
+				--text: #f2e6d8;
+				--accent: #ff7a1a;
+				--font-body: "Barlow", sans-serif;
+				--font-display: "Bebas Neue", sans-serif;
 			}
 
 			.content {
-				box-shadow: 0 0 3rem rgba(79, 195, 247, 0.1);
+				border-top: 4px solid var(--accent);
+				box-shadow: 0 0 3rem rgba(255, 122, 26, 0.12);
 			}
 
 			h1 {
-				font-weight: 500;
-				font-size: 2rem;
+				font-weight: 400;
+				font-size: 3rem;
+				letter-spacing: 0.04em;
+				margin: 0.25em 0;
 			}
 
 			h2 {
-				font-weight: 500;
-				font-size: 1.35rem;
+				font-weight: 400;
+				font-size: 2rem;
+				letter-spacing: 0.04em;
 			}
 
 			.content main video,
@@ -62,7 +66,7 @@
 			<back-button href="../index.html"></back-button>
 
 			<header>
-				<h1>🥽 Week 8: 3D 🧊</h1>
+				<h1>🏀 Week 8: 3D 🥽</h1>
 				<p>
 					A VR basketball shootout built in C# with
 					<a href="https://godotengine.org/" target="_blank" rel="noopener">Godot</a>
