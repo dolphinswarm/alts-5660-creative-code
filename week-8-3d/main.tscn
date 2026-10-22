@@ -19,6 +19,7 @@
 [ext_resource type="AudioStream" uid="uid://dcq6opawy8rpg" path="res://Audio/clock-tick-1.mp3" id="16_tick1"]
 [ext_resource type="AudioStream" uid="uid://chwmtfdavtcek" path="res://Audio/clock-tick-2.mp3" id="17_tick2"]
 [ext_resource type="AudioStream" uid="uid://bedatat1biujy" path="res://Audio/clock-tick-3.mp3" id="18_tick3"]
+[ext_resource type="Script" path="res://Scripts/ControllerHaptics.cs" id="19_haptc"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_w6ruu"]
 panorama = ExtResource("4_1bvp3")
@@ -448,6 +449,12 @@ BestLabel = NodePath("../Scoreboard/BestLabel")
 Buzzer = NodePath("../Scoreboard/Buzzer")
 TickSound = NodePath("../Scoreboard/TickSound")
 ButtonSound = NodePath("../StartButton/ClickSound")
+
+[node name="ControllerHaptics" type="Node" parent="." unique_id=1427083615 node_paths=PackedStringArray("LeftHand", "RightHand", "StartButton")]
+script = ExtResource("19_haptc")
+LeftHand = NodePath("../XROrigin3D/LeftHand")
+RightHand = NodePath("../XROrigin3D/RightHand")
+StartButton = NodePath("../StartButton")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1846698784]
 transform = Transform3D(0.81915206, -0.51983684, 0.24240386, 0, 0.42261824, 0.9063078, -0.57357645, -0.7424039, 0.3461886, 0, 0, 0)
