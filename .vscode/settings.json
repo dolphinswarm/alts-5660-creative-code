@@ -1,0 +1,10 @@
+{
+	"explicitFolding.rules": {
+		"glsl": [{ "beginRegex": "#region", "endRegex": "#endregion" }]
+	},
+	// Validate shaders as WebGL-style GLSL ES 1.00, not Vulkan. "SHADER_VALIDATOR" gates the validator-only block atop each shader.
+	"shader-validator.glsl.targetClient": "None",
+	"shader-validator.glsl.spirvVersion": "None",
+	"shader-validator.defines": { "SHADER_VALIDATOR": "1" },
+	"cSpell.words": ["glsl", "highp", "ifdef", "luma", "lygia", "smoothstep", "Vite"]
+}

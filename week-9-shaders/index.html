@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Week 9 - Shaders</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>"
+		/>
+		<script src="../shared/back-button.js" defer></script>
+		<style>
+			:root {
+				--bg: #07070c;
+				--surface: #14141f;
+				--text: #ececf4;
+				--accent: #ff5fa0;
+			}
+
+			.content main {
+				cursor: pointer;
+				background: var(--bg);
+				border-radius: var(--radius);
+			}
+
+			.content main .lil-gui {
+				position: absolute;
+				top: 0.5rem;
+				right: 0.5rem;
+				cursor: auto;
+			}
+
+			.hint {
+				position: absolute;
+				left: 50%;
+				bottom: 1rem;
+				margin: 0;
+				padding: 0.5rem 1rem;
+				transform: translateX(-50%);
+				background: rgb(0 0 0 / 0.7);
+				border-radius: var(--radius);
+				pointer-events: none;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="content">
+			<back-button href="../index.html"></back-button>
+
+			<header>
+				<h1>✨ Week 9: Shaders ✨</h1>
+				<p>
+					Your webcam as a stained-glass window - a Voronoi fragment shader built with
+					<a href="https://threejs.org/" target="_blank" rel="noopener">Three.js</a> and
+					<a href="https://lygia.xyz/" target="_blank" rel="noopener">LYGIA</a>. Each cell takes
+					the camera's color at its center, and the cells slowly drift.
+				</p>
+				<p>
+					<a
+						href="https://github.com/dolphinswarm/alts-5660-creative-code/tree/main/week-9-shaders"
+						target="_blank"
+						rel="noopener"
+						>View source on GitHub</a
+					>
+				</p>
+			</header>
+
+			<main>
+				<p class="hint">Click to turn on your webcam</p>
+			</main>
+		</section>
+
+		<script type="module" src="src/main.ts"></script>
+	</body>
+</html>
