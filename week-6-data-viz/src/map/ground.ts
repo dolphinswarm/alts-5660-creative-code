@@ -6,7 +6,7 @@ import type { Herd } from "./herd.js";
 const GROUND_PROBE_Y = 2000;
 const MIN_GROUND_Y = -100;
 
-// Meters the camera stays above the ground (not treetops), checked only below CAMERA_GROUND_CHECK_HEIGHT.
+// Meters the camera stays above the surface, checked only below CAMERA_GROUND_CHECK_HEIGHT.
 const CAMERA_GROUND_CLEARANCE = 1;
 const CAMERA_GROUND_CHECK_HEIGHT = 300;
 
@@ -64,13 +64,16 @@ export const snapSomeSquirrelsToGround = (herd: Herd, tiles: THREE.Object3D) => 
 	}
 };
 
-/** Keeps the camera CAMERA_GROUND_CLEARANCE above the lowest tile surface under it. */
+/**
+ * Keeps the camera CAMERA_GROUND_CLEARANCE above the visible surface under it - the
+ * tiles are a heightfield, so there's nothing to see beneath the treetops.
+ */
 export const keepCameraAboveGround = (camera: THREE.Camera, tiles: THREE.Object3D) => {
 	if (camera.position.y > CAMERA_GROUND_CHECK_HEIGHT) {
 		return;
 	}
 	const surface = probeSurfaceAt(tiles, camera.position.x, camera.position.z);
 	if (surface) {
-		camera.position.y = Math.max(camera.position.y, surface.bottom + CAMERA_GROUND_CLEARANCE);
+		camera.position.y = Math.max(camera.position.y, surface.top + CAMERA_GROUND_CLEARANCE);
 	}
 };

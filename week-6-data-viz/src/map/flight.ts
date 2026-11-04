@@ -3,7 +3,7 @@ import { probeSurfaceAt } from "./ground.js";
 import { type Herd, SQUIRREL_LENGTH_METERS } from "./herd.js";
 
 // Where flying to a squirrel ends up: this far away, tilted this far from straight down.
-const FLY_TO_DISTANCE = 12;
+const FLY_TO_DISTANCE = 30;
 const FLY_TO_TILT = THREE.MathUtils.degToRad(30);
 
 export type Pose = { position: THREE.Vector3; rotation: THREE.Quaternion };

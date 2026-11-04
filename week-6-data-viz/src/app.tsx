@@ -21,7 +21,6 @@ const loadSquirrelData = async (): Promise<SquirrelData> => {
 const App = () => {
 	const [data, setData] = React.useState<SquirrelData | null>(null);
 	const [tilesFailed, setTilesFailed] = React.useState(false);
-	const [attribution, setAttribution] = React.useState("");
 	const [checks, setChecks] = React.useState(DEFAULT_FILTER_CHECKS);
 	// An object, so re-picking the same squirrel still counts as a change.
 	const [selection, setSelection] = React.useState({ index: -1 });
@@ -68,7 +67,7 @@ const App = () => {
 	const squirrel = squirrels && selected >= 0 ? squirrels[selected] : null;
 	let status = "";
 	if (tilesFailed) {
-		status = "Couldn't load Google 3D tiles - check the API key.";
+		status = "Couldn't load the park's 3D tiles.";
 	} else if (!data) {
 		status = "Loading squirrels...";
 	}
@@ -84,7 +83,6 @@ const App = () => {
 						shown={shown}
 						selected={selected}
 						onSelect={handleSelect}
-						onAttribution={setAttribution}
 						onTilesError={handleTilesError}
 					/>
 				</Canvas>
@@ -100,7 +98,7 @@ const App = () => {
 						) : null}
 					</div>
 				</aside>
-				<p id="attribution">{attribution}</p>
+				<p id="attribution">Elevation: USGS 3DEP LiDAR (2014) · Imagery: NYS ITS Geospatial Services (2018)</p>
 			</main>
 
 			<form id="filters">

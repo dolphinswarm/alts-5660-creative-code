@@ -8,7 +8,6 @@ import type {
 	TilesRenderer as TilesRendererImpl,
 } from "3d-tiles-renderer/three";
 import {
-	GoogleCloudAuthPlugin,
 	GLTFExtensionsPlugin,
 	ReorientationPlugin,
 	TileCompressionPlugin,
@@ -30,12 +29,8 @@ import {
 } from "./park.js";
 import { SelectedPin, SquirrelHerd } from "./squirrel-herd.js";
 
-// https://developers.google.com/maps/documentation/tile/3d-tiles
-// Inlined from .env (or a GitHub secret on deploy) - it ships to the browser, so restrict it by referrer.
-const GOOGLE_API_KEY: string | undefined = import.meta.env.GOOGLE_API_KEY;
-if (!GOOGLE_API_KEY) {
-	throw new Error("GOOGLE_API_KEY missing from .env");
-}
+// Built from LiDAR and aerial imagery by tools/park-tiles/. Absolute, since child tile URLs resolve against it.
+const PARK_TILESET_URL = new URL("park/tileset.json", document.baseURI).href;
 
 // Max tilt from straight down - never looking at the horizon loads far fewer tiles.
 const MAX_CAMERA_TILT = THREE.MathUtils.degToRad(45);
@@ -50,14 +45,17 @@ const CAMERA_LIMITS_PRIORITY = -0.5;
 // The glTF-only decoder build, bundled from three.
 const dracoLoader = new DRACOLoader().setDecoderPath(DRACO_GLTF_CONFIG);
 
-// Module-level since TilesPlugin re-creates its plugin (and Google session) when "args" changes.
-const GOOGLE_AUTH_ARGS: ConstructorParameters<typeof GoogleCloudAuthPlugin> = [
-	{ apiToken: GOOGLE_API_KEY, autoRefreshToken: true },
-];
+// Module-level since TilesPlugin re-creates its plugin when "args" changes.
 const GLTF_ARGS: ConstructorParameters<typeof GLTFExtensionsPlugin> = [{ dracoLoader }];
 const REORIENTATION_ARGS: ConstructorParameters<typeof ReorientationPlugin> = [
 	{ lat: PARK_CENTER.lat * THREE.MathUtils.DEG2RAD, lon: PARK_CENTER.lon * THREE.MathUtils.DEG2RAD },
 ];
+
+/** Each tile's bare-earth mesh is only there for raycasts to find the ground under trees. */
+const hideGroundMesh = ({ scene }: { scene: THREE.Object3D }) => {
+	const ground = scene.getObjectByName("ground");
+	if (ground) ground.visible = false;
+};
 
 export type SquirrelMapHandle = {
 	/** Selects squirrel "index" and flies to it. */
@@ -74,14 +72,12 @@ type Props = {
 	selected: number;
 	/** -1 to deselect */
 	onSelect: (index: number) => void;
-	/** Google requires its data attributions to be shown alongside the tiles. */
-	onAttribution: (text: string) => void;
 	onTilesError: () => void;
 	ref?: React.Ref<SquirrelMapHandle>;
 };
 
-/** Central Park in Google's photorealistic 3D tiles, with every squirrel from the census on it. */
-export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttribution, onTilesError, ref }: Props) => {
+/** Central Park in 3D, with every squirrel from the census on it. */
+export const SquirrelMap = ({ census, model, shown, selected, onSelect, onTilesError, ref }: Props) => {
 	const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
 	const canvas = useThree((state) => state.gl.domElement);
 	const herd = React.useMemo(() => (census && model ? createHerd(census, model) : null), [census, model]);
@@ -226,21 +222,10 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 
 	// Stable, since TilesRenderer re-adds its listeners whenever these change.
 	const handleTilesLoadEnd = React.useCallback(() => {
-		if (!tiles.current) {
-			return;
-		}
-		const attributions: { type: string; value: string }[] = [];
-		tiles.current.getAttributions(attributions);
-		onAttribution(
-			attributions
-				.filter((attribution) => attribution.type === "string")
-				.map((attribution) => attribution.value)
-				.join(" "),
-		);
 		if (herd?.placed) {
 			queueSquirrelSnaps(herd, camera);
 		}
-	}, [herd, camera, onAttribution]);
+	}, [herd, camera]);
 
 	// Only the root tileset failing (null "tile") leaves no map at all.
 	const handleLoadError = React.useCallback(
@@ -257,13 +242,18 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 	return (
 		<>
 			<color attach="background" args={[0x151c1f]} />
-			{/* Google's tiles are unlit, so these only affect the squirrels. */}
+			{/* The tiles are unlit, so these only affect the squirrels. */}
 			<hemisphereLight args={[0xdde8ff, 0x3a4a2a, 1.5]} />
 			<directionalLight position={[-1, 2, 1]} intensity={2} />
 
 			{/* https://github.com/NASA-AMMOS/3DTilesRendererJS */}
-			<TilesRenderer ref={tiles} onTilesLoadEnd={handleTilesLoadEnd} onLoadError={handleLoadError}>
-				<TilesPlugin plugin={GoogleCloudAuthPlugin} args={GOOGLE_AUTH_ARGS} />
+			<TilesRenderer
+				ref={tiles}
+				url={PARK_TILESET_URL}
+				onLoadModel={hideGroundMesh}
+				onTilesLoadEnd={handleTilesLoadEnd}
+				onLoadError={handleLoadError}
+			>
 				<TilesPlugin plugin={TileCompressionPlugin} />
 				<TilesPlugin plugin={TilesFadePlugin} />
 				<TilesPlugin plugin={GLTFExtensionsPlugin} args={GLTF_ARGS} />
