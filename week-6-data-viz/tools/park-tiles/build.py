@@ -39,6 +39,10 @@ LIDAR_URL = "https://usgs-lidar-public.s3.amazonaws.com/NY_NewYorkCity/"
 # Ground and overlap-ground. Everything else but noise is a surface (trees, roofs).
 GROUND_CLASSES = (2, 18)
 NOISE_CLASSES = (7,)
+# Its heights are NAVD88 (above sea level) - this GEOID18 offset at PARK_CENTER makes them
+# ellipsoidal like Google's, so switching between the two keeps the ground in place.
+# https://geodesy.noaa.gov/api/geoid/ght?lat=40.7824&lon=-73.9654
+GEOID_HEIGHT = -31.655
 
 # https://orthos.its.ny.gov - 2018 is leaf-on and the census year.
 ORTHO_URL = "https://orthos.its.ny.gov/arcgis/rest/services/wms/2018/MapServer/export"
@@ -155,11 +159,11 @@ class ParkFrame:
         return ecef_to_geodetic(ecef)
 
     def tileset_transform(self):
-        """Column-major local -> ECEF matrix for the root tile."""
+        """Column-major local -> ECEF matrix for the root tile, lowered from sea level to the ellipsoid."""
         rotation = self.enu.T @ self.local_to_enu
         matrix = np.eye(4)
         matrix[:3, :3] = rotation
-        matrix[:3, 3] = self.origin
+        matrix[:3, 3] = self.origin + self.enu[2] * GEOID_HEIGHT
         return matrix.T.flatten().tolist()
 
 

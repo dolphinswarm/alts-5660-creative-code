@@ -2,8 +2,7 @@ import * as THREE from "three";
 import { probeSurfaceAt } from "./ground.js";
 import { type Herd, SQUIRREL_LENGTH_METERS } from "./herd.js";
 
-// Where flying to a squirrel ends up: this far away, tilted this far from straight down.
-const FLY_TO_DISTANCE = 30;
+// Flying to a squirrel ends up tilted this far from straight down.
 const FLY_TO_TILT = THREE.MathUtils.degToRad(30);
 
 export type Pose = { position: THREE.Vector3; rotation: THREE.Quaternion };
@@ -46,13 +45,14 @@ export const stepFlight = (flight: Flight, camera: THREE.Camera, delta: number) 
 	return progress === 1;
 };
 
-/** A view down at squirrel "index" that keeps the camera's heading, so it doesn't spin. */
+/** A view down at squirrel "index" from "distance" meters that keeps the camera's heading, so it doesn't spin. */
 export const getSquirrelViewPose = (
 	herd: Herd,
 	index: number,
 	camera: THREE.Camera,
 	tiles: THREE.Object3D,
 	cameraRadius: number,
+	distance: number,
 ): Pose => {
 	// Its real-size middle - from afar it's drawn much bigger than it is.
 	const target = new THREE.Vector3().fromArray(herd.positions, index * 3);
@@ -66,8 +66,8 @@ export const getSquirrelViewPose = (
 	heading.normalize();
 	const position = target
 		.clone()
-		.addScaledVector(heading, -FLY_TO_DISTANCE * Math.sin(FLY_TO_TILT))
-		.setY(target.y + FLY_TO_DISTANCE * Math.cos(FLY_TO_TILT));
+		.addScaledVector(heading, -distance * Math.sin(FLY_TO_TILT))
+		.setY(target.y + distance * Math.cos(FLY_TO_TILT));
 	// Stay above the treetops - the x-ray pass shows the squirrel through them.
 	const surface = probeSurfaceAt(tiles, position.x, position.z);
 	if (surface) {

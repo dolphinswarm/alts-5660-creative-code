@@ -2,11 +2,15 @@ import * as React from "react";
 import { Canvas } from "@react-three/fiber";
 import { loadSquirrelCensus, type SquirrelCensus } from "./data.js";
 import { getShownSquirrels } from "./map/herd.js";
-import { SquirrelMap, type SquirrelMapHandle } from "./map/squirrel-map.js";
+import { GOOGLE_TILES_AVAILABLE, SquirrelMap, type SquirrelMapHandle, type TileSource } from "./map/squirrel-map.js";
 import { DEFAULT_FILTER_CHECKS, matchesFilters, SquirrelFilters } from "./squirrel-filters.js";
 import { SquirrelInfo } from "./squirrel-info.js";
 import { loadSquirrelModel, type SquirrelModel } from "./squirrel-model.js";
 import { Tooltip } from "./tooltip.js";
+
+const PARK_ATTRIBUTION = "Elevation: USGS 3DEP LiDAR (2014) · Imagery: NYS ITS Geospatial Services (2018)";
+// How long the "couldn't reach Google" notice stays up, in ms.
+const GOOGLE_FAILED_NOTICE_MS = 6000;
 
 type SquirrelData = {
 	census: SquirrelCensus;
@@ -20,7 +24,12 @@ const loadSquirrelData = async (): Promise<SquirrelData> => {
 
 const App = () => {
 	const [data, setData] = React.useState<SquirrelData | null>(null);
-	const [tilesFailed, setTilesFailed] = React.useState(false);
+	const [source, setSource] = React.useState<TileSource>("park");
+	const [parkFailed, setParkFailed] = React.useState(false);
+	// Once Google fails (say, billing ran out), its switch stays off.
+	const [googleFailed, setGoogleFailed] = React.useState(false);
+	const [googleNotice, setGoogleNotice] = React.useState(false);
+	const [googleAttribution, setGoogleAttribution] = React.useState("");
 	const [checks, setChecks] = React.useState(DEFAULT_FILTER_CHECKS);
 	// An object, so re-picking the same squirrel still counts as a change.
 	const [selection, setSelection] = React.useState({ index: -1 });
@@ -51,7 +60,28 @@ const App = () => {
 	}
 
 	const handleSelect = React.useCallback((index: number) => setSelection({ index }), []);
-	const handleTilesError = React.useCallback(() => setTilesFailed(true), []);
+	const handleTilesError = React.useCallback((failed: TileSource) => {
+		if (failed === "park") {
+			setParkFailed(true);
+			return;
+		}
+		setGoogleFailed(true);
+		setGoogleNotice(true);
+		setSource("park");
+	}, []);
+
+	React.useEffect(() => {
+		if (!googleNotice) {
+			return;
+		}
+		const timer = setTimeout(() => setGoogleNotice(false), GOOGLE_FAILED_NOTICE_MS);
+		return () => clearTimeout(timer);
+	}, [googleNotice]);
+
+	const switchSource = (next: TileSource) => {
+		setGoogleAttribution("");
+		setSource(next);
+	};
 
 	React.useLayoutEffect(() => {
 		if (infoContent.current) infoContent.current.scrollTop = 0;
@@ -64,10 +94,20 @@ const App = () => {
 		}
 	};
 
+	const googleUsable = GOOGLE_TILES_AVAILABLE && !googleFailed;
+	let googleSwitchTitle = "Swap the park model for Google's photorealistic 3D tiles";
+	if (!GOOGLE_TILES_AVAILABLE) {
+		googleSwitchTitle = "Unavailable - this build has no Google API key";
+	} else if (googleFailed) {
+		googleSwitchTitle = "Unavailable - couldn't connect to Google's 3D tiles";
+	}
+
 	const squirrel = squirrels && selected >= 0 ? squirrels[selected] : null;
 	let status = "";
-	if (tilesFailed) {
+	if (source === "park" && parkFailed) {
 		status = "Couldn't load the park's 3D tiles.";
+	} else if (googleNotice) {
+		status = "Couldn't connect to Google's 3D tiles - back to the park model.";
 	} else if (!data) {
 		status = "Loading squirrels...";
 	}
@@ -78,11 +118,13 @@ const App = () => {
 				<Canvas flat dpr={window.devicePixelRatio} camera={{ fov: 50, near: 1, far: 20000 }}>
 					<SquirrelMap
 						ref={map}
+						source={source}
 						census={data?.census ?? null}
 						model={data?.model ?? null}
 						shown={shown}
 						selected={selected}
 						onSelect={handleSelect}
+						onAttribution={setGoogleAttribution}
 						onTilesError={handleTilesError}
 					/>
 				</Canvas>
@@ -98,7 +140,7 @@ const App = () => {
 						) : null}
 					</div>
 				</aside>
-				<p id="attribution">Elevation: USGS 3DEP LiDAR (2014) · Imagery: NYS ITS Geospatial Services (2018)</p>
+				<p id="attribution">{source === "google" ? googleAttribution : PARK_ATTRIBUTION}</p>
 			</main>
 
 			<form id="filters">
@@ -112,6 +154,15 @@ const App = () => {
 					<button type="button" onClick={flyToRandomSquirrel}>
 						Fly to a random squirrel
 					</button>
+					<label id="tile-source" title={googleSwitchTitle}>
+						<input
+							type="checkbox"
+							checked={source === "google"}
+							disabled={!googleUsable}
+							onChange={(event) => switchSource(event.target.checked ? "google" : "park")}
+						/>
+						Google 3D tiles
+					</label>
 					{squirrels ? (
 						<span>
 							Showing {shownCount.toLocaleString()} of {squirrels.length.toLocaleString()} squirrels
