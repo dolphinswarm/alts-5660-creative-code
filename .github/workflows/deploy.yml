@@ -26,7 +26,7 @@ jobs:
 
       - name: Assemble site
         env:
-          # Week 6's Vite build inlines its Google Maps key from here.
+          # Optional - week 6's Vite build inlines it to enable its Google 3D tiles switch.
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
           set -euo pipefail

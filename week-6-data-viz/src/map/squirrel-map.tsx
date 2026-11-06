@@ -30,12 +30,22 @@ import {
 } from "./park.js";
 import { SelectedPin, SquirrelHerd } from "./squirrel-herd.js";
 
+// Built from LiDAR and aerial imagery by tools/park-tiles/. Absolute, since child tile URLs resolve against it.
+const PARK_TILESET_URL = new URL("park/tileset.json", document.baseURI).href;
+
 // https://developers.google.com/maps/documentation/tile/3d-tiles
-// Inlined from .env (or a GitHub secret on deploy) - it ships to the browser, so restrict it by referrer.
-const GOOGLE_API_KEY: string | undefined = import.meta.env.GOOGLE_API_KEY;
-if (!GOOGLE_API_KEY) {
-	throw new Error("GOOGLE_API_KEY missing from .env");
-}
+// Optional, inlined from .env (or a GitHub secret on deploy) - it ships to the browser, so restrict it by referrer.
+const GOOGLE_API_KEY: string = import.meta.env.GOOGLE_API_KEY ?? "";
+/** Without a key, only the park tiles can be shown. */
+export const GOOGLE_TILES_AVAILABLE = GOOGLE_API_KEY !== "";
+
+export type TileSource = "park" | "google";
+
+const TILE_SOURCE_SETTINGS: Record<TileSource, { flyToDistance: number; cameraAboveTreetops: boolean }> = {
+	// A heightfield that's soft up close, with nothing to see under the treetops.
+	park: { flyToDistance: 30, cameraAboveTreetops: true },
+	google: { flyToDistance: 12, cameraAboveTreetops: false },
+};
 
 // Max tilt from straight down - never looking at the horizon loads far fewer tiles.
 const MAX_CAMERA_TILT = THREE.MathUtils.degToRad(45);
@@ -59,6 +69,12 @@ const REORIENTATION_ARGS: ConstructorParameters<typeof ReorientationPlugin> = [
 	{ lat: PARK_CENTER.lat * THREE.MathUtils.DEG2RAD, lon: PARK_CENTER.lon * THREE.MathUtils.DEG2RAD },
 ];
 
+/** Each park tile's bare-earth mesh is only there for raycasts to find the ground under trees. */
+const hideGroundMesh = ({ scene }: { scene: THREE.Object3D }) => {
+	const ground = scene.getObjectByName("ground");
+	if (ground) ground.visible = false;
+};
+
 export type SquirrelMapHandle = {
 	/** Selects squirrel "index" and flies to it. */
 	focusSquirrel: (index: number) => void;
@@ -66,6 +82,7 @@ export type SquirrelMapHandle = {
 };
 
 type Props = {
+	source: TileSource;
 	/** Null while loading - the tiles start streaming in meanwhile. */
 	census: SquirrelCensus | null;
 	model: SquirrelModel | null;
@@ -74,14 +91,24 @@ type Props = {
 	selected: number;
 	/** -1 to deselect */
 	onSelect: (index: number) => void;
-	/** Google requires its data attributions to be shown alongside the tiles. */
+	/** Google requires its data attributions to be shown alongside its tiles. */
 	onAttribution: (text: string) => void;
-	onTilesError: () => void;
+	onTilesError: (source: TileSource) => void;
 	ref?: React.Ref<SquirrelMapHandle>;
 };
 
-/** Central Park in Google's photorealistic 3D tiles, with every squirrel from the census on it. */
-export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttribution, onTilesError, ref }: Props) => {
+/** Central Park in 3D, with every squirrel from the census on it. */
+export const SquirrelMap = ({
+	source,
+	census,
+	model,
+	shown,
+	selected,
+	onSelect,
+	onAttribution,
+	onTilesError,
+	ref,
+}: Props) => {
 	const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
 	const canvas = useThree((state) => state.gl.domElement);
 	const herd = React.useMemo(() => (census && model ? createHerd(census, model) : null), [census, model]);
@@ -90,6 +117,9 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 	const park = React.useRef<ParkFrame | null>(null);
 	const flight = React.useRef<Flight | null>(null);
 	const cameraBeforeControls = React.useMemo(() => new THREE.Vector3(), []);
+	// Switching tiles re-places the squirrels but keeps the view.
+	const hasView = React.useRef(false);
+	const settings = TILE_SOURCE_SETTINGS[source];
 
 	React.useLayoutEffect(() => {
 		const { position, rotation } = getPlaceholderPose();
@@ -104,6 +134,11 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 		herd.shown.set(shown);
 		herd.dirty = true;
 	}, [herd, shown]);
+
+	// Each source puts the ground at a different height, so the squirrels start over on the new tiles.
+	React.useEffect(() => {
+		if (herd) herd.placed = false;
+	}, [herd, source]);
 
 	//#region Flights
 	/** Glides the camera to "pose", with the controls paused for the trip. */
@@ -125,9 +160,18 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 				return;
 			}
 			onSelect(index);
-			flyTo(getSquirrelViewPose(herd, index, camera, tiles.current.group, controls.current.cameraRadius));
+			flyTo(
+				getSquirrelViewPose(
+					herd,
+					index,
+					camera,
+					tiles.current.group,
+					controls.current.cameraRadius,
+					settings.flyToDistance,
+				),
+			);
 		},
-		[herd, camera, onSelect, flyTo],
+		[herd, camera, onSelect, flyTo, settings],
 	);
 	const showPark = React.useCallback(() => {
 		if (park.current) flyTo(getOverviewPose(park.current, camera));
@@ -155,16 +199,19 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 			group.updateMatrixWorld(true);
 			placeHerd(herd, census, (lat, lon) => latLonToScene(group, lat, lon));
 			park.current = computeParkFrame(herd, group);
-			const overview = getOverviewPose(park.current, camera);
-			camera.position.copy(overview.position);
-			camera.quaternion.copy(overview.rotation);
+			if (!hasView.current) {
+				hasView.current = true;
+				const overview = getOverviewPose(park.current, camera);
+				camera.position.copy(overview.position);
+				camera.quaternion.copy(overview.rotation);
+			}
 			// The tiles may have all loaded already, with no "tiles-load-end" to come.
 			queueSquirrelSnaps(herd, camera);
 		}
 		if (park.current && !flight.current) {
 			clampCameraToPark(park.current, camera, cameraBeforeControls);
 		}
-		keepCameraAboveGround(camera, group);
+		keepCameraAboveGround(camera, group, settings.cameraAboveTreetops);
 		camera.updateMatrixWorld();
 	}, CAMERA_LIMITS_PRIORITY);
 	//#endregion
@@ -226,21 +273,20 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 
 	// Stable, since TilesRenderer re-adds its listeners whenever these change.
 	const handleTilesLoadEnd = React.useCallback(() => {
-		if (!tiles.current) {
-			return;
+		if (tiles.current && source === "google") {
+			const attributions: { type: string; value: string }[] = [];
+			tiles.current.getAttributions(attributions);
+			onAttribution(
+				attributions
+					.filter((attribution) => attribution.type === "string")
+					.map((attribution) => attribution.value)
+					.join(" "),
+			);
 		}
-		const attributions: { type: string; value: string }[] = [];
-		tiles.current.getAttributions(attributions);
-		onAttribution(
-			attributions
-				.filter((attribution) => attribution.type === "string")
-				.map((attribution) => attribution.value)
-				.join(" "),
-		);
 		if (herd?.placed) {
 			queueSquirrelSnaps(herd, camera);
 		}
-	}, [herd, camera, onAttribution]);
+	}, [source, herd, camera, onAttribution]);
 
 	// Only the root tileset failing (null "tile") leaves no map at all.
 	const handleLoadError = React.useCallback(
@@ -248,22 +294,30 @@ export const SquirrelMap = ({ census, model, shown, selected, onSelect, onAttrib
 			if (event.tile) {
 				return;
 			}
-			console.error("3D tiles failed to load:", event.error);
-			onTilesError();
+			console.error(`${source} 3D tiles failed to load:`, event.error);
+			onTilesError(source);
 		},
-		[onTilesError],
+		[source, onTilesError],
 	);
 
 	return (
 		<>
 			<color attach="background" args={[0x151c1f]} />
-			{/* Google's tiles are unlit, so these only affect the squirrels. */}
+			{/* The tiles are unlit, so these only affect the squirrels. */}
 			<hemisphereLight args={[0xdde8ff, 0x3a4a2a, 1.5]} />
 			<directionalLight position={[-1, 2, 1]} intensity={2} />
 
 			{/* https://github.com/NASA-AMMOS/3DTilesRendererJS */}
-			<TilesRenderer ref={tiles} onTilesLoadEnd={handleTilesLoadEnd} onLoadError={handleLoadError}>
-				<TilesPlugin plugin={GoogleCloudAuthPlugin} args={GOOGLE_AUTH_ARGS} />
+			{/* Keyed, so switching sources starts a fresh renderer. Every "on" prop becomes a listener, so none can be undefined. */}
+			<TilesRenderer
+				key={source}
+				ref={tiles}
+				url={source === "park" ? PARK_TILESET_URL : undefined}
+				onLoadModel={hideGroundMesh}
+				onTilesLoadEnd={handleTilesLoadEnd}
+				onLoadError={handleLoadError}
+			>
+				{source === "google" ? <TilesPlugin plugin={GoogleCloudAuthPlugin} args={GOOGLE_AUTH_ARGS} /> : null}
 				<TilesPlugin plugin={TileCompressionPlugin} />
 				<TilesPlugin plugin={TilesFadePlugin} />
 				<TilesPlugin plugin={GLTFExtensionsPlugin} args={GLTF_ARGS} />

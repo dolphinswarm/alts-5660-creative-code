@@ -40,7 +40,7 @@ const keepSharedStylesheet: Plugin = {
 };
 
 export default defineConfig({
-	// Exposes GOOGLE_API_KEY from .env.
+	// Exposes the optional GOOGLE_API_KEY from .env.
 	envPrefix: ["VITE_", "GOOGLE_"],
 	// Relative asset URLs, so it works under any Pages subpath.
 	base: "./",

@@ -5,9 +5,9 @@ import type { Herd } from "./herd.js";
 // Roughly the middle of Central Park - the scene's origin (+Y up, meters).
 export const PARK_CENTER = { lat: 40.7824, lon: -73.9654 };
 
-// How far past the park's edges (meters) the camera may go, and how high,
-// relative to the height that fits the whole park on screen.
-const CAMERA_BOUNDS_MARGIN = 300;
+// How far past the park's edges (meters) the camera may go - the tiles stop at
+// ~250 - and how high, relative to the height that fits the whole park on screen.
+const CAMERA_BOUNDS_MARGIN = 150;
 const CAMERA_MAX_HEIGHT_SCALE = 1.25;
 // Roughly the height getOverviewPose() picks for the whole park.
 const PLACEHOLDER_HEIGHT = 4500;

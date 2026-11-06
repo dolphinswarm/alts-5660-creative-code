@@ -6,9 +6,11 @@ import type { Herd } from "./herd.js";
 const GROUND_PROBE_Y = 2000;
 const MIN_GROUND_Y = -100;
 
-// Meters the camera stays above the ground (not treetops), checked only below CAMERA_GROUND_CHECK_HEIGHT.
+// Meters the camera stays above the surface, checked only below CAMERA_GROUND_CHECK_HEIGHT.
 const CAMERA_GROUND_CLEARANCE = 1;
 const CAMERA_GROUND_CHECK_HEIGHT = 300;
+// Coarser tiles (Google's first ones are crude blocks) would throw the camera up after a source switch.
+const CAMERA_GROUND_MAX_ERROR = 32;
 
 const SNAP_BUDGET_MS = 3;
 
@@ -17,7 +19,7 @@ const rayOrigin = new THREE.Vector3();
 const down = new THREE.Vector3(0, -1, 0);
 const squirrelPosition = new THREE.Vector3();
 
-type Surface = { top: number; bottom: number; bottomError: number };
+type Surface = { top: number; topError: number; bottom: number; bottomError: number };
 
 /** Highest and lowest loaded tile surfaces at (sceneX, sceneZ), or null if none yet. */
 export const probeSurfaceAt = (tiles: THREE.Object3D, sceneX: number, sceneZ: number): Surface | null => {
@@ -29,6 +31,7 @@ export const probeSurfaceAt = (tiles: THREE.Object3D, sceneX: number, sceneZ: nu
 	const bottom = hits[hits.length - 1];
 	return {
 		top: hits[0].point.y,
+		topError: hits[0].object.userData.tile?.geometricError ?? Infinity,
 		bottom: bottom.point.y,
 		bottomError: bottom.object.userData.tile?.geometricError ?? Infinity,
 	};
@@ -64,13 +67,20 @@ export const snapSomeSquirrelsToGround = (herd: Herd, tiles: THREE.Object3D) => 
 	}
 };
 
-/** Keeps the camera CAMERA_GROUND_CLEARANCE above the lowest tile surface under it. */
-export const keepCameraAboveGround = (camera: THREE.Camera, tiles: THREE.Object3D) => {
+/**
+ * Keeps the camera CAMERA_GROUND_CLEARANCE above the tiles under it - the treetops if
+ * "aboveTreetops" (for heightfield tiles with nothing beneath them), else the ground.
+ */
+export const keepCameraAboveGround = (camera: THREE.Camera, tiles: THREE.Object3D, aboveTreetops: boolean) => {
 	if (camera.position.y > CAMERA_GROUND_CHECK_HEIGHT) {
 		return;
 	}
 	const surface = probeSurfaceAt(tiles, camera.position.x, camera.position.z);
-	if (surface) {
-		camera.position.y = Math.max(camera.position.y, surface.bottom + CAMERA_GROUND_CLEARANCE);
+	if (!surface) {
+		return;
+	}
+	const [floor, floorError] = aboveTreetops ? [surface.top, surface.topError] : [surface.bottom, surface.bottomError];
+	if (floorError <= CAMERA_GROUND_MAX_ERROR) {
+		camera.position.y = Math.max(camera.position.y, floor + CAMERA_GROUND_CLEARANCE);
 	}
 };
